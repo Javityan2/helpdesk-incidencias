@@ -1,5 +1,7 @@
 package com.helpdesk.incidencias.infrastructure.config;
 
+import com.helpdesk.incidencias.infrastructure.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,6 +23,9 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthFilter;
     
     /**
      * Configuración del encoder de contraseñas
@@ -63,6 +69,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll() // Para desarrollo
                 
                 // Endpoints de usuarios (solo admin)
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
@@ -88,15 +95,20 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             
+            // Agregar filtro JWT antes del filtro de autenticación
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            
             // Configurar manejo de excepciones
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(401);
-                    response.getWriter().write("{\"error\":\"No autorizado\"}");
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"No autorizado\",\"message\":\"Token inválido o expirado\"}");
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setStatus(403);
-                    response.getWriter().write("{\"error\":\"Acceso denegado\"}");
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\":\"Acceso denegado\",\"message\":\"No tienes permisos para acceder a este recurso\"}");
                 })
             );
         
