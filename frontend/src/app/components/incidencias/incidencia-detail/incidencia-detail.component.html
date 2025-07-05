@@ -1,0 +1,104 @@
+<div class="incidencia-detail-container">
+  <div class="detail-header">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bug_report</mat-icon>
+          Detalle de Incidencia #{{ incidencia?.id }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          {{ incidencia?.fechaCreacion | date:'medium' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="incidencia-info">
+          <div class="info-row">
+            <div class="info-label">Título:</div>
+            <div class="info-value">{{ incidencia?.titulo }}</div>
+          </div>
+          
+          <div class="info-row">
+            <div class="info-label">Descripción:</div>
+            <div class="info-value">{{ incidencia?.descripcion }}</div>
+          </div>
+          
+          <div class="info-row">
+            <div class="info-label">Estado:</div>
+            <div class="info-value">
+              <mat-chip [color]="getEstadoColor(incidencia?.estado || '')" selected>
+                {{ incidencia?.estado }}
+              </mat-chip>
+            </div>
+          </div>
+          
+          <div class="info-row">
+            <div class="info-label">Prioridad:</div>
+            <div class="info-value">
+              <mat-chip [color]="getPrioridadColor(incidencia?.prioridad || '')" selected>
+                {{ incidencia?.prioridad }}
+              </mat-chip>
+            </div>
+          </div>
+          
+          <div class="info-row">
+            <div class="info-label">Categoría:</div>
+            <div class="info-value">{{ incidencia?.categoria }}</div>
+          </div>
+          
+          <div class="info-row">
+            <div class="info-label">Reportado por:</div>
+            <div class="info-value">{{ incidencia?.usuario?.nombre }}</div>
+          </div>
+          
+          <div class="info-row" *ngIf="incidencia?.tecnico">
+            <div class="info-label">Asignado a:</div>
+            <div class="info-value">{{ incidencia?.tecnico?.nombre }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="editarIncidencia()">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
+        <button mat-raised-button color="accent" (click)="volver()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+  
+  <!-- Comentarios -->
+  <div class="comentarios-section">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>comment</mat-icon>
+          Comentarios
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="comentarios-list" *ngIf="comentarios?.length">
+          <div class="comentario-item" *ngFor="let comentario of comentarios">
+            <div class="comentario-header">
+              <span class="autor">{{ comentario.usuario?.nombre }}</span>
+              <span class="fecha">{{ comentario.fechaCreacion | date:'short' }}</span>
+            </div>
+            <div class="comentario-contenido">
+              {{ comentario.contenido }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="no-comentarios" *ngIf="!comentarios?.length">
+          <mat-icon>comment_outline</mat-icon>
+          <p>No hay comentarios aún</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

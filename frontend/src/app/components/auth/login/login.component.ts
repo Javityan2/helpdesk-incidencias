@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, LoginRequest } from '../../../services/auth.service';
-import { ToastrService } from 'ngx-toastr';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -18,17 +18,17 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService
+    private snackBar: MatSnackBar
   ) {
     this.loginForm = this.formBuilder.group({
-      empleadoId: ['', [Validators.required, Validators.minLength(3)]],
+      identificador: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
   ngOnInit(): void {
     // Si ya está autenticado, redirigir al dashboard
-    if (this.authService.isTokenValid()) {
+    if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
   }
@@ -41,18 +41,57 @@ export class LoginComponent implements OnInit {
       this.authService.login(loginRequest).subscribe({
         next: (response) => {
           if (response.success) {
-            this.toastr.success('Inicio de sesión exitoso', 'Bienvenido');
+            this.snackBar.open('Inicio de sesión exitoso', 'Cerrar', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+              panelClass: ['success-snackbar']
+            });
             this.router.navigate(['/dashboard']);
           } else {
-            this.toastr.error(response.message, 'Error');
+            this.snackBar.open(response.message || 'Credenciales inválidas', 'Cerrar', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'top',
+              panelClass: ['error-snackbar']
+            });
+            // Detener el loading después de 2 segundos
+            setTimeout(() => {
+              this.loading = false;
+            }, 2000);
           }
         },
         error: (error) => {
           console.error('Error en login:', error);
-          this.toastr.error('Error al iniciar sesión. Verifique sus credenciales.', 'Error');
+          let errorMessage = 'Error al iniciar sesión. Verifique sus credenciales.';
+          
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.status === 401) {
+            errorMessage = 'Credenciales inválidas';
+          } else if (error.status === 0) {
+            errorMessage = 'No se puede conectar con el servidor. Verifique que el backend esté ejecutándose.';
+          }
+          
+          this.snackBar.open(errorMessage, 'Cerrar', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            panelClass: ['error-snackbar']
+          });
+          
+          // Detener el loading después de 2 segundos
+          setTimeout(() => {
+            this.loading = false;
+          }, 2000);
         },
         complete: () => {
-          this.loading = false;
+          // Solo detener loading si no hubo éxito (ya se detiene en error)
+          if (!this.authService.isAuthenticated()) {
+            setTimeout(() => {
+              this.loading = false;
+            }, 2000);
+          }
         }
       });
     } else {

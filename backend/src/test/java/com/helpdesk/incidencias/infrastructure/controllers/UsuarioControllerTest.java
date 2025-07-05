@@ -3,6 +3,7 @@ package com.helpdesk.incidencias.infrastructure.controllers;
 import com.helpdesk.incidencias.application.services.UsuarioService;
 import com.helpdesk.incidencias.domain.entities.Usuario;
 import com.helpdesk.incidencias.domain.entities.Rol;
+import com.helpdesk.incidencias.infrastructure.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -19,11 +21,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 /**
  * Pruebas de integración para UsuarioController
  */
 @WebMvcTest(UsuarioController.class)
+@WithMockUser(roles = "ADMIN")
 class UsuarioControllerTest {
 
     @Autowired
@@ -31,6 +35,9 @@ class UsuarioControllerTest {
 
     @MockBean
     private UsuarioService usuarioService;
+
+    @MockBean
+    private JwtService jwtService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -134,6 +141,7 @@ class UsuarioControllerTest {
 
         // Act & Assert
         mockMvc.perform(delete("/api/usuarios/1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
@@ -149,6 +157,7 @@ class UsuarioControllerTest {
 
         // Act & Assert
         mockMvc.perform(delete("/api/usuarios/999")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));

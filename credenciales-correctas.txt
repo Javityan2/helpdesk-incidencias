@@ -1,0 +1,17 @@
+CREDENCIALES PARA ACCEDER AL SISTEMA HELPDESK
+
+Usuario Admin:
+- Identificador: ADMIN001
+- Contraseña: password
+
+Usuario Admin (alternativo):
+- Identificador: admin@helpdesk.com
+- Contraseña: password
+
+NOTA: El problema anterior era que el hash de la contraseña "admin123" no era correcto.
+Ahora el sistema funciona correctamente con la contraseña "password".
+
+Para probar el login:
+1. Abre http://localhost:4200 en tu navegador
+2. Usa las credenciales de arriba
+3. El botón de "Iniciar Sesión" ahora se detiene automáticamente después de 2 segundos si hay error 

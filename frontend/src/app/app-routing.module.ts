@@ -10,8 +10,11 @@ import { IncidenciaDetailComponent } from './components/incidencias/incidencia-d
 import { IncidenciaFormComponent } from './components/incidencias/incidencia-form/incidencia-form.component';
 
 const routes: Routes = [
+  // Rutas públicas
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  
+  // Rutas protegidas
   { 
     path: 'dashboard', 
     component: DashboardComponent,
@@ -37,6 +40,25 @@ const routes: Routes = [
     component: IncidenciaFormComponent,
     canActivate: [AuthGuard]
   },
+  
+  // Rutas adicionales (placeholder para futuras implementaciones)
+  { 
+    path: 'usuarios', 
+    component: DashboardComponent, // Temporalmente redirige al dashboard
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'reportes', 
+    component: DashboardComponent, // Temporalmente redirige al dashboard
+    canActivate: [AuthGuard]
+  },
+  { 
+    path: 'configuracion', 
+    component: DashboardComponent, // Temporalmente redirige al dashboard
+    canActivate: [AuthGuard]
+  },
+  
+  // Ruta catch-all
   { path: '**', redirectTo: '/login' }
 ];
 

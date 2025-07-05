@@ -117,8 +117,18 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> eliminarUsuario(@PathVariable Long id) {
         try {
+            // Verificar si el usuario existe antes de eliminarlo
+            Optional<Usuario> usuarioExistente = usuarioService.obtenerUsuario(id);
+            if (usuarioExistente.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Usuario no encontrado con ID: " + id));
+            }
+            
             usuarioService.eliminarUsuario(id);
             return ResponseEntity.ok(ApiResponse.success("Usuario eliminado exitosamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Error al eliminar usuario: " + e.getMessage()));
@@ -220,6 +230,39 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Error al obtener estadísticas: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtiene todos los usuarios activos
+     */
+    @GetMapping("/activos")
+    public ResponseEntity<ApiResponse<List<Usuario>>> obtenerUsuariosActivos() {
+        try {
+            List<Usuario> usuarios = usuarioService.obtenerUsuariosActivos();
+            return ResponseEntity.ok(new ApiResponse<>(true, "Usuarios activos obtenidos exitosamente", usuarios));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Error al obtener usuarios activos: " + e.getMessage(), null));
+        }
+    }
+
+    /**
+     * Obtiene un usuario por su ID de empleado
+     */
+    @GetMapping("/empleado/{empleadoId}")
+    public ResponseEntity<ApiResponse<Usuario>> obtenerUsuarioPorEmpleadoId(@PathVariable String empleadoId) {
+        try {
+            Optional<Usuario> usuario = usuarioService.obtenerUsuarioPorEmpleadoId(empleadoId);
+            if (usuario.isPresent()) {
+                return ResponseEntity.ok(new ApiResponse<>(true, "Usuario encontrado exitosamente", usuario.get()));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ApiResponse<>(false, "Usuario no encontrado con empleadoId: " + empleadoId, null));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Error al obtener usuario: " + e.getMessage(), null));
         }
     }
 } 

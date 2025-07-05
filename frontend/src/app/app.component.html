@@ -1,29 +1,9 @@
-<div class="app-container">
-  <!-- Login Page -->
-  <div *ngIf="!isLoggedIn" class="login-container">
-    <router-outlet></router-outlet>
-  </div>
+<!-- Mostrar layout principal si está autenticado -->
+<div *ngIf="isAuthenticated">
+  <app-layout></app-layout>
+</div>
 
-  <!-- Main Application -->
-  <div *ngIf="isLoggedIn" class="main-container">
-    <!-- Sidebar -->
-    <app-sidebar 
-      [currentUser]="currentUser"
-      (logout)="logout()">
-    </app-sidebar>
-
-    <!-- Main Content -->
-    <div class="content-container">
-      <!-- Header -->
-      <app-header 
-        [currentUser]="currentUser"
-        (logout)="logout()">
-      </app-header>
-
-      <!-- Router Outlet -->
-      <main class="main-content">
-        <router-outlet></router-outlet>
-      </main>
-    </div>
-  </div>
+<!-- Mostrar solo el router outlet para login si no está autenticado -->
+<div *ngIf="!isAuthenticated">
+  <router-outlet></router-outlet>
 </div> 

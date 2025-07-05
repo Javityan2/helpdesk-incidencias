@@ -1,0 +1,121 @@
+<div class="layout-container">
+  <!-- Toolbar principal -->
+  <mat-toolbar color="primary" class="main-toolbar">
+    <button mat-icon-button (click)="toggleSidebar()" class="menu-button">
+      <mat-icon>menu</mat-icon>
+    </button>
+    
+    <span class="toolbar-title">
+      <mat-icon class="title-icon">support_agent</mat-icon>
+      Helpdesk Incidencias
+    </span>
+    
+    <span class="toolbar-spacer"></span>
+    
+    <!-- Notificaciones -->
+    <button mat-icon-button [matBadge]="3" matBadgeColor="warn" class="notification-button">
+      <mat-icon>notifications</mat-icon>
+    </button>
+    
+    <!-- Menú de usuario -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    
+    <mat-menu #userMenu="matMenu">
+      <div class="user-menu-header">
+        <mat-icon>person</mat-icon>
+        <span>{{ currentUser?.nombre || 'Usuario' }}</span>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigateTo('/dashboard')">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button>
+      <button mat-menu-item (click)="navigateTo('/profile')">
+        <mat-icon>person</mat-icon>
+        <span>Mi Perfil</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Contenedor principal con sidebar -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <mat-sidenav-container class="sidenav-container">
+      <mat-sidenav #drawer class="sidenav" 
+                   [mode]="'side'" 
+                   [opened]="sidebarOpened"
+                   [fixedInViewport]="true"
+                   [attr.role]="'navigation'">
+        
+        <mat-nav-list class="sidebar-nav">
+          <!-- Dashboard -->
+          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <span matListItemTitle>Dashboard</span>
+          </a>
+          
+          <!-- Incidencias -->
+          <a mat-list-item routerLink="/incidencias" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>bug_report</mat-icon>
+            <span matListItemTitle>Incidencias</span>
+          </a>
+          
+          <!-- Nueva Incidencia -->
+          <a mat-list-item routerLink="/incidencias/nueva" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>add_circle</mat-icon>
+            <span matListItemTitle>Nueva Incidencia</span>
+          </a>
+          
+          <mat-divider></mat-divider>
+          
+          <!-- Gestión de Usuarios -->
+          <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>people</mat-icon>
+            <span matListItemTitle>Usuarios</span>
+          </a>
+          
+          <!-- Reportes -->
+          <a mat-list-item routerLink="/reportes" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>assessment</mat-icon>
+            <span matListItemTitle>Reportes</span>
+          </a>
+          
+          <!-- Configuración -->
+          <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>settings</mat-icon>
+            <span matListItemTitle>Configuración</span>
+          </a>
+        </mat-nav-list>
+        
+        <!-- Información del sistema -->
+        <div class="sidebar-footer">
+          <mat-card class="system-info">
+            <mat-card-content>
+              <div class="system-status">
+                <mat-icon class="status-icon success">check_circle</mat-icon>
+                <span>Sistema Activo</span>
+              </div>
+              <div class="system-version">
+                <small>v1.0.0</small>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-sidenav>
+      
+      <!-- Contenido principal -->
+      <mat-sidenav-content class="main-content">
+        <div class="content-container">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+</div> 

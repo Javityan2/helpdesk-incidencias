@@ -10,14 +10,14 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>ID de Empleado</mat-label>
-        <input matInput formControlName="empleadoId" placeholder="Ingrese su ID de empleado">
+        <mat-label>Email o ID de Empleado</mat-label>
+        <input matInput formControlName="identificador" placeholder="Ingrese su email o ID de empleado">
         <mat-icon matSuffix>person</mat-icon>
-        <mat-error *ngIf="loginForm.get('empleadoId')?.hasError('required')">
-          El ID de empleado es requerido
+        <mat-error *ngIf="loginForm.get('identificador')?.hasError('required')">
+          El identificador es requerido
         </mat-error>
-        <mat-error *ngIf="loginForm.get('empleadoId')?.hasError('minlength')">
-          El ID debe tener al menos 3 caracteres
+        <mat-error *ngIf="loginForm.get('identificador')?.hasError('minlength')">
+          El identificador debe tener al menos 3 caracteres
         </mat-error>
       </mat-form-field>
 

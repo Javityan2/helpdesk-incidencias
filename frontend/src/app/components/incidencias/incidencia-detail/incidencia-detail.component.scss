@@ -1,0 +1,166 @@
+.incidencia-detail-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.detail-header {
+  margin-bottom: 24px;
+  
+  mat-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  mat-card-header {
+    padding-bottom: 16px;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 500;
+      
+      mat-icon {
+        margin-right: 8px;
+        color: #1976d2;
+      }
+    }
+  }
+}
+
+.incidencia-info {
+  .info-row {
+    display: flex;
+    margin-bottom: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      font-weight: 500;
+      color: #666;
+      min-width: 120px;
+      margin-right: 16px;
+    }
+    
+    .info-value {
+      flex: 1;
+      color: #333;
+      
+      mat-chip {
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+mat-card-actions {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  
+  button {
+    min-width: 120px;
+  }
+}
+
+.comentarios-section {
+  mat-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  mat-card-header {
+    padding-bottom: 16px;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      font-size: 1.2rem;
+      
+      mat-icon {
+        margin-right: 8px;
+        color: #1976d2;
+      }
+    }
+  }
+}
+
+.comentarios-list {
+  .comentario-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .comentario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      
+      .autor {
+        font-weight: 500;
+        color: #1976d2;
+      }
+      
+      .fecha {
+        font-size: 0.9rem;
+        color: #666;
+      }
+    }
+    
+    .comentario-contenido {
+      color: #333;
+      line-height: 1.5;
+    }
+  }
+}
+
+.no-comentarios {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .incidencia-detail-container {
+    padding: 16px;
+  }
+  
+  .incidencia-info .info-row {
+    flex-direction: column;
+    
+    .info-label {
+      min-width: auto;
+      margin-right: 0;
+      margin-bottom: 4px;
+    }
+  }
+  
+  mat-card-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+} 

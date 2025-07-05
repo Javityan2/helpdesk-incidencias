@@ -1,7 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IncidenciasService, Incidencia } from '../../../services/incidencias.service';
-import { ToastrService } from 'ngx-toastr';
+import { IncidenciasService } from '../../../services/incidencias.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+interface Incidencia {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  estado: string;
+  prioridad: string;
+  categoria: string;
+  fechaCreacion: string;
+  usuario?: any;
+  tecnico?: any;
+}
 
 @Component({
   selector: 'app-incidencia-detail',
@@ -10,13 +22,14 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class IncidenciaDetailComponent implements OnInit {
   incidencia: Incidencia | null = null;
+  comentarios: any[] = [];
   loading = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private incidenciasService: IncidenciasService,
-    private toastr: ToastrService
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -29,17 +42,18 @@ export class IncidenciaDetailComponent implements OnInit {
   loadIncidencia(id: number): void {
     this.loading = true;
     this.incidenciasService.getIncidencia(id).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.incidencia = response.data as Incidencia;
-        } else {
-          this.toastr.error(response.message, 'Error');
-          this.router.navigate(['/incidencias']);
-        }
+      next: (response: any) => {
+        this.incidencia = response;
+        this.loadComentarios(id);
       },
       error: (error) => {
         console.error('Error cargando incidencia:', error);
-        this.toastr.error('Error al cargar la incidencia', 'Error');
+        this.snackBar.open('Error al cargar la incidencia', 'Cerrar', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['error-snackbar']
+        });
         this.router.navigate(['/incidencias']);
       },
       complete: () => {
@@ -48,42 +62,37 @@ export class IncidenciaDetailComponent implements OnInit {
     });
   }
 
-  onEdit(): void {
+  loadComentarios(incidenciaId: number): void {
+    // TODO: Implementar servicio de comentarios
+    this.comentarios = [];
+  }
+
+  editarIncidencia(): void {
     if (this.incidencia) {
       this.router.navigate(['/incidencias', this.incidencia.id, 'editar']);
     }
   }
 
-  onBack(): void {
+  volver(): void {
     this.router.navigate(['/incidencias']);
   }
 
   getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'ABIERTA': return '#ff9800';
-      case 'EN_PROCESO': return '#2196f3';
-      case 'RESUELTA': return '#4caf50';
-      case 'CERRADA': return '#9e9e9e';
-      default: return '#666';
+    switch (estado?.toUpperCase()) {
+      case 'ABIERTA': return 'warn';
+      case 'EN_PROCESO': return 'primary';
+      case 'RESUELTA': return 'accent';
+      case 'CERRADA': return 'basic';
+      default: return 'basic';
     }
   }
 
   getPrioridadColor(prioridad: string): string {
-    switch (prioridad) {
-      case 'ALTA': return '#f44336';
-      case 'MEDIA': return '#ff9800';
-      case 'BAJA': return '#4caf50';
-      default: return '#666';
+    switch (prioridad?.toUpperCase()) {
+      case 'ALTA': return 'warn';
+      case 'MEDIA': return 'accent';
+      case 'BAJA': return 'primary';
+      default: return 'basic';
     }
-  }
-
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   }
 } 

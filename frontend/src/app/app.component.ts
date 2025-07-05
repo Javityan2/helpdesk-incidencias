@@ -8,8 +8,7 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'Helpdesk Incidencias';
-  isLoggedIn = false;
+  isAuthenticated = false;
   currentUser: any = null;
 
   constructor(
@@ -17,19 +16,20 @@ export class AppComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Suscribirse a cambios de autenticación
     this.authService.isAuthenticated$.subscribe(
       isAuth => {
-        this.isLoggedIn = isAuth;
-        if (isAuth) {
-          this.currentUser = this.authService.getCurrentUser();
+        this.isAuthenticated = isAuth;
+        if (!isAuth) {
+          this.router.navigate(['/login']);
         }
       }
     );
-  }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    // Suscribirse a cambios del usuario
+    this.authService.currentUser$.subscribe(
+      user => this.currentUser = user
+    );
   }
 } 

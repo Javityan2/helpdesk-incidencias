@@ -239,6 +239,10 @@ public class UsuarioService {
      * Elimina un usuario
      */
     public void eliminarUsuario(Long id) {
+        Optional<Usuario> usuarioExistente = usuarioRepository.findById(id);
+        if (usuarioExistente.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + id);
+        }
         usuarioRepository.deleteById(id);
     }
     

@@ -721,6 +721,10 @@ public class IncidenciaService {
      * Elimina una incidencia
      */
     public void eliminarIncidencia(Long id) {
+        Optional<Incidencia> incidenciaExistente = incidenciaRepository.findById(id);
+        if (incidenciaExistente.isEmpty()) {
+            throw new IllegalArgumentException("Incidencia no encontrada con ID: " + id);
+        }
         incidenciaRepository.deleteById(id);
     }
     
