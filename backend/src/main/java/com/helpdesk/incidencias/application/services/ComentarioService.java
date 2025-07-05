@@ -1,5 +1,8 @@
 package com.helpdesk.incidencias.application.services;
 
+import com.helpdesk.incidencias.application.dtos.ComentarioDTO;
+import com.helpdesk.incidencias.application.dtos.ComentarioCreateRequest;
+import com.helpdesk.incidencias.application.dtos.ComentarioUpdateRequest;
 import com.helpdesk.incidencias.domain.entities.Comentario;
 import com.helpdesk.incidencias.domain.entities.Incidencia;
 import com.helpdesk.incidencias.domain.entities.Usuario;
@@ -8,12 +11,17 @@ import com.helpdesk.incidencias.domain.repositories.ComentarioRepository;
 import com.helpdesk.incidencias.domain.repositories.IncidenciaRepository;
 import com.helpdesk.incidencias.domain.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Servicio de aplicación para la gestión de comentarios
@@ -30,6 +38,230 @@ public class ComentarioService {
     
     @Autowired
     private UsuarioRepository usuarioRepository;
+    
+    // ===================================
+    // MÉTODOS PARA DTOs
+    // ===================================
+    
+    /**
+     * Crea un nuevo comentario desde DTO
+     */
+    public ComentarioDTO crearComentario(ComentarioCreateRequest request) {
+        // Validar que la incidencia existe
+        Optional<Incidencia> incidenciaOpt = incidenciaRepository.findById(request.getIncidenciaId());
+        if (incidenciaOpt.isEmpty()) {
+            throw new IllegalArgumentException("Incidencia no encontrada con ID: " + request.getIncidenciaId());
+        }
+        
+        Comentario comentario = new Comentario();
+        comentario.setContenido(request.getContenido());
+        comentario.setTipo(request.getTipo());
+        comentario.setIncidencia(incidenciaOpt.get());
+        comentario.setFechaCreacion(LocalDateTime.now());
+        
+        // TODO: Obtener usuario del contexto de seguridad
+        // comentario.setUsuario(usuarioActual);
+        
+        Comentario comentarioCreado = comentarioRepository.save(comentario);
+        return convertirADTO(comentarioCreado);
+    }
+    
+    /**
+     * Actualiza un comentario desde DTO
+     */
+    public ComentarioDTO actualizarComentario(Long id, ComentarioUpdateRequest request) {
+        Optional<Comentario> comentarioOpt = comentarioRepository.findById(id);
+        if (comentarioOpt.isEmpty()) {
+            throw new IllegalArgumentException("Comentario no encontrado con ID: " + id);
+        }
+        
+        Comentario comentario = comentarioOpt.get();
+        
+        if (request.tieneContenido()) {
+            comentario.setContenido(request.getContenido());
+        }
+        if (request.tieneTipo()) {
+            comentario.setTipo(request.getTipo());
+        }
+        
+        Comentario comentarioActualizado = comentarioRepository.save(comentario);
+        return convertirADTO(comentarioActualizado);
+    }
+    
+    /**
+     * Obtiene comentario por ID como DTO
+     */
+    @Transactional(readOnly = true)
+    public Optional<ComentarioDTO> obtenerComentarioPorId(Long id) {
+        Optional<Comentario> comentarioOpt = comentarioRepository.findById(id);
+        return comentarioOpt.map(this::convertirADTO);
+    }
+    
+    /**
+     * Obtiene comentarios de una incidencia como DTOs
+     */
+    @Transactional(readOnly = true)
+    public List<ComentarioDTO> obtenerComentariosPorIncidencia(Long incidenciaId, TipoComentario tipo) {
+        List<Comentario> comentarios;
+        if (tipo != null) {
+            comentarios = comentarioRepository.findByIncidenciaIdAndTipo(incidenciaId, tipo);
+        } else {
+            comentarios = comentarioRepository.findByIncidenciaId(incidenciaId);
+        }
+        
+        return comentarios.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene comentarios paginados como DTOs
+     */
+    @Transactional(readOnly = true)
+    public Page<ComentarioDTO> obtenerComentariosPaginados(Long incidenciaId, TipoComentario tipo, Pageable pageable) {
+        Page<Comentario> comentarios;
+        if (tipo != null) {
+            comentarios = comentarioRepository.findByIncidenciaIdAndTipo(incidenciaId, tipo, pageable);
+        } else {
+            comentarios = comentarioRepository.findByIncidenciaId(incidenciaId, pageable);
+        }
+        
+        return comentarios.map(this::convertirADTO);
+    }
+    
+    /**
+     * Elimina un comentario
+     */
+    public void eliminarComentario(Long id) {
+        if (!comentarioRepository.existsById(id)) {
+            throw new IllegalArgumentException("Comentario no encontrado con ID: " + id);
+        }
+        comentarioRepository.deleteById(id);
+    }
+    
+    /**
+     * Obtiene comentarios por tipo como DTOs
+     */
+    @Transactional(readOnly = true)
+    public List<ComentarioDTO> obtenerComentariosPorTipoDTO(TipoComentario tipo) {
+        List<Comentario> comentarios = comentarioRepository.findByTipo(tipo);
+        return comentarios.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene comentarios de un usuario como DTOs
+     */
+    @Transactional(readOnly = true)
+    public List<ComentarioDTO> obtenerComentariosPorUsuario(Long usuarioId) {
+        List<Comentario> comentarios = comentarioRepository.findByUsuarioId(usuarioId);
+        return comentarios.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene comentarios internos de una incidencia
+     */
+    @Transactional(readOnly = true)
+    public List<ComentarioDTO> obtenerComentariosInternos(Long incidenciaId) {
+        List<Comentario> comentarios = comentarioRepository.findByIncidenciaIdAndTipo(incidenciaId, TipoComentario.INTERNO);
+        return comentarios.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene comentarios técnicos de una incidencia
+     */
+    @Transactional(readOnly = true)
+    public List<ComentarioDTO> obtenerComentariosTecnicos(Long incidenciaId) {
+        List<Comentario> comentarios = comentarioRepository.findByIncidenciaIdAndTipoIn(
+            incidenciaId, List.of(TipoComentario.TECNICO, TipoComentario.INTERNO));
+        return comentarios.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Obtiene estadísticas de comentarios de una incidencia
+     */
+    @Transactional(readOnly = true)
+    public Object obtenerEstadisticasComentarios(Long incidenciaId) {
+        Map<String, Object> estadisticas = new HashMap<>();
+        
+        long totalComentarios = comentarioRepository.countByIncidenciaId(incidenciaId);
+        long comentariosGenerales = comentarioRepository.countByIncidenciaIdAndTipo(incidenciaId, TipoComentario.GENERAL);
+        long comentariosTecnicos = comentarioRepository.countByIncidenciaIdAndTipo(incidenciaId, TipoComentario.TECNICO);
+        long comentariosInternos = comentarioRepository.countByIncidenciaIdAndTipo(incidenciaId, TipoComentario.INTERNO);
+        
+        estadisticas.put("totalComentarios", totalComentarios);
+        estadisticas.put("comentariosGenerales", comentariosGenerales);
+        estadisticas.put("comentariosTecnicos", comentariosTecnicos);
+        estadisticas.put("comentariosInternos", comentariosInternos);
+        
+        return estadisticas;
+    }
+    
+    /**
+     * Obtiene estadísticas generales de comentarios
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerEstadisticasGenerales() {
+        Map<String, Object> estadisticas = new HashMap<>();
+        
+        long totalComentarios = comentarioRepository.count();
+        long comentariosGenerales = comentarioRepository.countByTipo(TipoComentario.GENERAL);
+        long comentariosTecnicos = comentarioRepository.countByTipo(TipoComentario.TECNICO);
+        long comentariosInternos = comentarioRepository.countByTipo(TipoComentario.INTERNO);
+        
+        estadisticas.put("totalComentarios", totalComentarios);
+        estadisticas.put("comentariosGenerales", comentariosGenerales);
+        estadisticas.put("comentariosTecnicos", comentariosTecnicos);
+        estadisticas.put("comentariosInternos", comentariosInternos);
+        
+        return estadisticas;
+    }
+    
+    // ===================================
+    // MÉTODOS DE CONVERSIÓN
+    // ===================================
+    
+    /**
+     * Convierte una entidad Comentario a DTO
+     */
+    private ComentarioDTO convertirADTO(Comentario comentario) {
+        ComentarioDTO dto = new ComentarioDTO();
+        
+        // Datos básicos
+        dto.setId(comentario.getId());
+        dto.setContenido(comentario.getContenido());
+        dto.setTipo(comentario.getTipo());
+        dto.setFechaCreacion(comentario.getFechaCreacion());
+        
+        // Usuario que creó el comentario
+        if (comentario.getUsuario() != null) {
+            dto.setUsuarioId(comentario.getUsuario().getId());
+            dto.setUsuarioEmpleadoId(comentario.getUsuario().getEmpleadoId());
+            dto.setUsuarioNombre(comentario.getUsuario().getNombre());
+            dto.setUsuarioApellido(comentario.getUsuario().getApellido());
+            dto.setUsuarioEmail(comentario.getUsuario().getEmail());
+            dto.setUsuarioDepartamento(comentario.getUsuario().getDepartamento());
+        }
+        
+        // Incidencia relacionada
+        if (comentario.getIncidencia() != null) {
+            dto.setIncidenciaId(comentario.getIncidencia().getId());
+            dto.setIncidenciaTitulo(comentario.getIncidencia().getTitulo());
+        }
+        
+        return dto;
+    }
+    
+    // ===================================
+    // MÉTODOS EXISTENTES (mantener)
+    // ===================================
     
     /**
      * Crea un nuevo comentario
@@ -165,7 +397,8 @@ public class ComentarioService {
      */
     @Transactional(readOnly = true)
     public List<Comentario> obtenerComentariosTecnicosPorIncidencia(Incidencia incidencia) {
-        return comentarioRepository.findComentariosTecnicos(incidencia);
+        return comentarioRepository.findComentariosTecnicos(incidencia, 
+            List.of(TipoComentario.TECNICO, TipoComentario.INTERNO));
     }
     
     /**
@@ -213,7 +446,7 @@ public class ComentarioService {
      */
     @Transactional(readOnly = true)
     public List<Comentario> obtenerComentariosRecientesPorUsuario(Usuario usuario, int limite) {
-        return comentarioRepository.findComentariosRecientesByUsuario(usuario, limite);
+        return comentarioRepository.findComentariosRecientesByUsuario(usuario.getId(), limite);
     }
     
     /**

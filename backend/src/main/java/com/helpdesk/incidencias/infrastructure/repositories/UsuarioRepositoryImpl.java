@@ -12,10 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementación del repositorio de usuarios usando Spring Data JPA
+ * Implementación del repositorio de usuarios
  */
 @Repository
 public interface UsuarioRepositoryImpl extends JpaRepository<Usuario, Long>, UsuarioRepository {
+    
+    // ===================================
+    // MÉTODOS DE BÚSQUEDA
+    // ===================================
     
     @Override
     @Query("SELECT u FROM Usuario u WHERE u.empleadoId = :empleadoId")
@@ -27,11 +31,13 @@ public interface UsuarioRepositoryImpl extends JpaRepository<Usuario, Long>, Usu
     
     @Override
     @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.password = :password")
-    Optional<Usuario> findByEmailAndPassword(@Param("email") String email, @Param("password") String password);
+    Optional<Usuario> findByEmailAndPassword(@Param("email") String email, 
+                                           @Param("password") String password);
     
     @Override
     @Query("SELECT u FROM Usuario u WHERE u.empleadoId = :empleadoId AND u.password = :password")
-    Optional<Usuario> findByEmpleadoIdAndPassword(@Param("empleadoId") String empleadoId, @Param("password") String password);
+    Optional<Usuario> findByEmpleadoIdAndPassword(@Param("empleadoId") String empleadoId, 
+                                                 @Param("password") String password);
     
     @Override
     @Query("SELECT u FROM Usuario u WHERE u.activo = true")
@@ -46,12 +52,16 @@ public interface UsuarioRepositoryImpl extends JpaRepository<Usuario, Long>, Usu
     List<Usuario> findByDepartamento(@Param("departamento") String departamento);
     
     @Override
-    @Query("SELECT u FROM Usuario u WHERE u.rol IN ('TECNICO', 'SUPERVISOR', 'ADMIN')")
-    List<Usuario> findTecnicos();
+    @Query("SELECT u FROM Usuario u WHERE u.rol IN :roles")
+    List<Usuario> findTecnicos(@Param("roles") List<Rol> roles);
     
     @Override
-    @Query("SELECT u FROM Usuario u WHERE u.rol IN ('SUPERVISOR', 'ADMIN')")
-    List<Usuario> findSupervisores();
+    @Query("SELECT u FROM Usuario u WHERE u.rol IN :roles")
+    List<Usuario> findSupervisores(@Param("roles") List<Rol> roles);
+    
+    // ===================================
+    // MÉTODOS DE VERIFICACIÓN
+    // ===================================
     
     @Override
     @Query("SELECT COUNT(u) > 0 FROM Usuario u WHERE u.email = :email")
@@ -61,6 +71,10 @@ public interface UsuarioRepositoryImpl extends JpaRepository<Usuario, Long>, Usu
     @Query("SELECT COUNT(u) > 0 FROM Usuario u WHERE u.empleadoId = :empleadoId")
     boolean existsByEmpleadoId(@Param("empleadoId") String empleadoId);
     
+    // ===================================
+    // MÉTODOS DE CONTEO
+    // ===================================
+    
     @Override
     @Query("SELECT COUNT(u) FROM Usuario u WHERE u.rol = :rol")
     long countByRol(@Param("rol") Rol rol);
@@ -68,4 +82,15 @@ public interface UsuarioRepositoryImpl extends JpaRepository<Usuario, Long>, Usu
     @Override
     @Query("SELECT COUNT(u) FROM Usuario u WHERE u.activo = true")
     long countByActivoTrue();
+    
+    // ===================================
+    // MÉTODOS DE ESTADÍSTICAS
+    // ===================================
+    
+    @Override
+    @Query("SELECT u.nombre || ' ' || u.apellido, COUNT(i) " +
+           "FROM Usuario u LEFT JOIN u.incidencias i " +
+           "GROUP BY u.id, u.nombre, u.apellido " +
+           "ORDER BY COUNT(i) DESC")
+    List<Object[]> findUsuariosMasActivos();
 } 

@@ -63,12 +63,12 @@ public interface UsuarioRepository {
     /**
      * Obtiene técnicos (usuarios con rol técnico o superior)
      */
-    List<Usuario> findTecnicos();
+    List<Usuario> findTecnicos(List<Rol> roles);
     
     /**
      * Obtiene supervisores (usuarios con rol supervisor o superior)
      */
-    List<Usuario> findSupervisores();
+    List<Usuario> findSupervisores(List<Rol> roles);
     
     /**
      * Verifica si existe un usuario con el email dado
@@ -99,4 +99,13 @@ public interface UsuarioRepository {
      * Cuenta usuarios activos
      */
     long countByActivoTrue();
+    
+    // ===================================
+    // MÉTODOS DE ESTADÍSTICAS
+    // ===================================
+    
+    /**
+     * Obtiene usuarios más activos (por número de incidencias creadas)
+     */
+    List<Object[]> findUsuariosMasActivos();
 } 

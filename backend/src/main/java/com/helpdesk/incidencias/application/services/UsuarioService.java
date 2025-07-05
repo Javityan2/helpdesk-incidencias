@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Servicio de aplicación para la gestión de usuarios
@@ -198,7 +200,7 @@ public class UsuarioService {
      */
     @Transactional(readOnly = true)
     public List<Usuario> obtenerTecnicos() {
-        return usuarioRepository.findTecnicos();
+        return usuarioRepository.findTecnicos(List.of(Rol.TECNICO, Rol.SUPERVISOR, Rol.ADMIN));
     }
     
     /**
@@ -206,7 +208,7 @@ public class UsuarioService {
      */
     @Transactional(readOnly = true)
     public List<Usuario> obtenerSupervisores() {
-        return usuarioRepository.findSupervisores();
+        return usuarioRepository.findSupervisores(List.of(Rol.SUPERVISOR, Rol.ADMIN));
     }
     
     /**
@@ -277,6 +279,28 @@ public class UsuarioService {
         long admins = usuarioRepository.countByRol(Rol.ADMIN);
         
         return new UsuarioStats(totalUsuarios, usuariosActivos, empleados, supervisores, tecnicos, admins);
+    }
+    
+    /**
+     * Obtiene usuarios más activos (por número de incidencias creadas)
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerUsuariosMasActivos() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        List<Object[]> usuariosActivos = usuarioRepository.findUsuariosMasActivos();
+        Map<String, Long> porUsuario = new HashMap<>();
+        
+        for (Object[] usuario : usuariosActivos) {
+            String nombreCompleto = (String) usuario[0];
+            Long cantidadIncidencias = (Long) usuario[1];
+            porUsuario.put(nombreCompleto, cantidadIncidencias);
+        }
+        
+        resultado.put("usuariosActivos", porUsuario);
+        resultado.put("totalUsuarios", porUsuario.size());
+        
+        return resultado;
     }
     
     /**

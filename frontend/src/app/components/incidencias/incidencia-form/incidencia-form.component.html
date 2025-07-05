@@ -1,0 +1,92 @@
+<div class="form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assignment</mat-icon>
+        {{ isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="incidenciaForm" (ngSubmit)="onSubmit()" class="form">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Título</mat-label>
+            <input matInput formControlName="titulo" placeholder="Ingrese el título de la incidencia">
+            <mat-error *ngIf="incidenciaForm.get('titulo')?.hasError('required')">
+              El título es requerido
+            </mat-error>
+            <mat-error *ngIf="incidenciaForm.get('titulo')?.hasError('minlength')">
+              El título debe tener al menos 5 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" 
+                      placeholder="Describa detalladamente el problema"
+                      rows="4"></textarea>
+            <mat-error *ngIf="incidenciaForm.get('descripcion')?.hasError('required')">
+              La descripción es requerida
+            </mat-error>
+            <mat-error *ngIf="incidenciaForm.get('descripcion')?.hasError('minlength')">
+              La descripción debe tener al menos 10 caracteres
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row three-columns">
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+              <mat-option *ngFor="let estado of estados" [value]="estado.value">
+                {{ estado.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="incidenciaForm.get('estado')?.hasError('required')">
+              El estado es requerido
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Prioridad</mat-label>
+            <mat-select formControlName="prioridad">
+              <mat-option *ngFor="let prioridad of prioridades" [value]="prioridad.value">
+                {{ prioridad.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="incidenciaForm.get('prioridad')?.hasError('required')">
+              La prioridad es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoria">
+              <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
+                {{ categoria.label }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="incidenciaForm.get('categoria')?.hasError('required')">
+              La categoría es requerida
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" mat-button (click)="onCancel()" [disabled]="loading">
+            <mat-icon>cancel</mat-icon>
+            Cancelar
+          </button>
+          <button type="submit" mat-raised-button color="primary" [disabled]="loading || incidenciaForm.invalid">
+            <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            {{ isEditMode ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div> 

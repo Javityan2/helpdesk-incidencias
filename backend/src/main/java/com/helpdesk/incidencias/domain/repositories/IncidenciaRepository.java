@@ -5,6 +5,9 @@ import com.helpdesk.incidencias.domain.entities.Usuario;
 import com.helpdesk.incidencias.domain.entities.EstadoIncidencia;
 import com.helpdesk.incidencias.domain.entities.Prioridad;
 import com.helpdesk.incidencias.domain.entities.CategoriaIncidencia;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -57,12 +60,12 @@ public interface IncidenciaRepository {
     /**
      * Obtiene incidencias activas (no resueltas)
      */
-    List<Incidencia> findIncidenciasActivas();
+    List<Incidencia> findIncidenciasActivas(List<EstadoIncidencia> estados);
     
     /**
      * Obtiene incidencias críticas
      */
-    List<Incidencia> findIncidenciasCriticas();
+    List<Incidencia> findIncidenciasCriticas(List<EstadoIncidencia> estados, Prioridad prioridad);
     
     /**
      * Obtiene incidencias por fecha de creación
@@ -77,7 +80,7 @@ public interface IncidenciaRepository {
     /**
      * Busca incidencias por título o descripción (búsqueda de texto)
      */
-    List<Incidencia> findByTituloContainingOrDescripcionContaining(String titulo, String descripcion);
+    List<Incidencia> findByTituloContainingOrDescripcionContaining(String texto);
     
     /**
      * Obtiene incidencias ordenadas por prioridad y fecha de creación
@@ -93,6 +96,37 @@ public interface IncidenciaRepository {
      * Obtiene incidencias asignadas a un técnico específico
      */
     List<Incidencia> findIncidenciasAsignadasATecnico(Usuario tecnico);
+    
+    // ===================================
+    // MÉTODOS DE FILTRADO Y PAGINACIÓN
+    // ===================================
+    
+    /**
+     * Obtiene incidencias filtradas
+     */
+    List<Incidencia> findByFiltros(EstadoIncidencia estado, Prioridad prioridad, 
+                                   CategoriaIncidencia categoria, String usuarioId);
+    
+    /**
+     * Obtiene incidencias filtradas con paginación
+     */
+    Page<Incidencia> findByFiltrosPaginados(EstadoIncidencia estado, Prioridad prioridad,
+                                            CategoriaIncidencia categoria, String usuarioId, 
+                                            Pageable pageable);
+    
+    /**
+     * Obtiene incidencias populares
+     */
+    List<Incidencia> findIncidenciasPopulares(int limit);
+    
+    // ===================================
+    // MÉTODOS DE CONTEO
+    // ===================================
+    
+    /**
+     * Cuenta todas las incidencias
+     */
+    long count();
     
     /**
      * Cuenta incidencias por estado
@@ -112,12 +146,51 @@ public interface IncidenciaRepository {
     /**
      * Cuenta incidencias activas
      */
-    long countIncidenciasActivas();
+    long countIncidenciasActivas(List<EstadoIncidencia> estados);
     
     /**
      * Cuenta incidencias críticas
      */
-    long countIncidenciasCriticas();
+    long countIncidenciasCriticas(List<EstadoIncidencia> estados, Prioridad prioridad);
+    
+    /**
+     * Cuenta incidencias por fecha de creación
+     */
+    long countByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    
+    /**
+     * Cuenta incidencias por fecha de resolución
+     */
+    long countByFechaResolucionBetween(LocalDateTime inicio, LocalDateTime fin);
+    
+    // ===================================
+    // MÉTODOS DE ESTADÍSTICAS
+    // ===================================
+    
+    /**
+     * Obtiene estadísticas por departamento
+     */
+    List<Object[]> findEstadisticasPorDepartamento();
+    
+    /**
+     * Obtiene estadísticas por técnico
+     */
+    List<Object[]> findEstadisticasPorTecnico();
+    
+    /**
+     * Obtiene estadísticas por categoría
+     */
+    List<Object[]> findEstadisticasPorCategoria();
+    
+    /**
+     * Obtiene tendencias por fecha
+     */
+    List<Object[]> findTendenciasPorFecha(LocalDate fechaInicio, LocalDate fechaFin);
+    
+    /**
+     * Obtiene tiempo promedio de resolución
+     */
+    Double findTiempoPromedioResolucion();
     
     /**
      * Elimina una incidencia por ID

@@ -4,6 +4,8 @@ import com.helpdesk.incidencias.domain.entities.Comentario;
 import com.helpdesk.incidencias.domain.entities.Incidencia;
 import com.helpdesk.incidencias.domain.entities.Usuario;
 import com.helpdesk.incidencias.domain.entities.TipoComentario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +57,7 @@ public interface ComentarioRepository {
     /**
      * Obtiene comentarios técnicos
      */
-    List<Comentario> findComentariosTecnicos(Incidencia incidencia);
+    List<Comentario> findComentariosTecnicos(Incidencia incidencia, List<TipoComentario> tipos);
     
     /**
      * Obtiene comentarios ordenados por fecha de creación (más recientes primero)
@@ -75,7 +77,50 @@ public interface ComentarioRepository {
     /**
      * Obtiene comentarios recientes de un usuario
      */
-    List<Comentario> findComentariosRecientesByUsuario(Usuario usuario, int limite);
+    List<Comentario> findComentariosRecientesByUsuario(Long usuarioId, int limite);
+    
+    // ===================================
+    // MÉTODOS DE BÚSQUEDA POR ID
+    // ===================================
+    
+    /**
+     * Obtiene comentarios por ID de incidencia
+     */
+    List<Comentario> findByIncidenciaId(Long incidenciaId);
+    
+    /**
+     * Obtiene comentarios por ID de incidencia y tipo
+     */
+    List<Comentario> findByIncidenciaIdAndTipo(Long incidenciaId, TipoComentario tipo);
+    
+    /**
+     * Obtiene comentarios por ID de incidencia con paginación
+     */
+    Page<Comentario> findByIncidenciaId(Long incidenciaId, Pageable pageable);
+    
+    /**
+     * Obtiene comentarios por ID de incidencia y tipo con paginación
+     */
+    Page<Comentario> findByIncidenciaIdAndTipo(Long incidenciaId, TipoComentario tipo, Pageable pageable);
+    
+    /**
+     * Obtiene comentarios por ID de usuario
+     */
+    List<Comentario> findByUsuarioId(Long usuarioId);
+    
+    /**
+     * Obtiene comentarios por ID de incidencia y tipos múltiples
+     */
+    List<Comentario> findByIncidenciaIdAndTipoIn(Long incidenciaId, List<TipoComentario> tipos);
+    
+    // ===================================
+    // MÉTODOS DE CONTEO
+    // ===================================
+    
+    /**
+     * Cuenta todos los comentarios
+     */
+    long count();
     
     /**
      * Cuenta comentarios por incidencia
@@ -96,6 +141,16 @@ public interface ComentarioRepository {
      * Cuenta comentarios públicos por incidencia
      */
     long countByIncidenciaAndEsInternoFalse(Incidencia incidencia);
+    
+    /**
+     * Cuenta comentarios por ID de incidencia
+     */
+    long countByIncidenciaId(Long incidenciaId);
+    
+    /**
+     * Cuenta comentarios por ID de incidencia y tipo
+     */
+    long countByIncidenciaIdAndTipo(Long incidenciaId, TipoComentario tipo);
     
     /**
      * Elimina un comentario por ID

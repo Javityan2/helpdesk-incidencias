@@ -1,0 +1,31 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.spinner {
+  color: #3f51b5;
+}
+
+.loading-message {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Tamaños del spinner */
+:host ::ng-deep .mat-mdc-progress-spinner {
+  width: auto !important;
+  height: auto !important;
+} 
