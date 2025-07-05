@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -38,6 +38,9 @@ import { IncidenciasListComponent } from './components/incidencias/incidencias-l
 import { IncidenciaDetailComponent } from './components/incidencias/incidencia-detail/incidencia-detail.component';
 import { IncidenciaFormComponent } from './components/incidencias/incidencia-form/incidencia-form.component';
 import { LoadingComponent } from './components/shared/loading/loading.component';
+
+// Interceptors
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 // Módulos
 import { AppRoutingModule } from './app-routing.module';
@@ -85,7 +88,13 @@ import { AppRoutingModule } from './app-routing.module';
     MatExpansionModule,
     MatDividerModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { } 

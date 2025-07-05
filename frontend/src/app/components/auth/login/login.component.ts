@@ -27,9 +27,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Si ya está autenticado, redirigir al dashboard
+    // Si ya está autenticado, redirigir a incidencias
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/incidencias']);
     }
   }
 
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
               verticalPosition: 'top',
               panelClass: ['success-snackbar']
             });
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/incidencias']);
           } else {
             this.snackBar.open(response.message || 'Credenciales inválidas', 'Cerrar', {
               duration: 5000,

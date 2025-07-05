@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { IncidenciasService, Incidencia } from '../../../services/incidencias.service';
-import { ToastrService } from 'ngx-toastr';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-incidencias-list',
@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./incidencias-list.component.scss']
 })
 export class IncidenciasListComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'titulo', 'estado', 'prioridad', 'categoria', 'usuario', 'fechaCreacion', 'acciones'];
+  displayedColumns: string[] = ['titulo', 'usuario', 'estado'];
   dataSource: MatTableDataSource<Incidencia> = new MatTableDataSource<Incidencia>([]);
   loading = false;
 
@@ -22,7 +22,7 @@ export class IncidenciasListComponent implements OnInit {
   constructor(
     private incidenciasService: IncidenciasService,
     private router: Router,
-    private toastr: ToastrService
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -41,12 +41,18 @@ export class IncidenciasListComponent implements OnInit {
         if (response.success) {
           this.dataSource.data = response.data as Incidencia[];
         } else {
-          this.toastr.error(response.message, 'Error');
+          this.snackBar.open(response.message || 'Error al cargar incidencias', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       },
       error: (error) => {
         console.error('Error cargando incidencias:', error);
-        this.toastr.error('Error al cargar las incidencias', 'Error');
+        this.snackBar.open('Error al cargar las incidencias', 'Cerrar', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
       },
       complete: () => {
         this.loading = false;
@@ -76,15 +82,24 @@ export class IncidenciasListComponent implements OnInit {
       this.incidenciasService.deleteIncidencia(incidencia.id!).subscribe({
         next: (response) => {
           if (response.success) {
-            this.toastr.success('Incidencia eliminada correctamente', 'Éxito');
+            this.snackBar.open('Incidencia eliminada correctamente', 'Cerrar', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
             this.loadIncidencias();
           } else {
-            this.toastr.error(response.message, 'Error');
+            this.snackBar.open(response.message || 'Error al eliminar incidencia', 'Cerrar', {
+              duration: 5000,
+              panelClass: ['error-snackbar']
+            });
           }
         },
         error: (error) => {
           console.error('Error eliminando incidencia:', error);
-          this.toastr.error('Error al eliminar la incidencia', 'Error');
+          this.snackBar.open('Error al eliminar la incidencia', 'Cerrar', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     }

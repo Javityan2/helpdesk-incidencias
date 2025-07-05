@@ -70,7 +70,7 @@ public interface IncidenciaRepositoryImpl extends JpaRepository<Incidencia, Long
            "(:estado IS NULL OR i.estado = :estado) AND " +
            "(:prioridad IS NULL OR i.prioridad = :prioridad) AND " +
            "(:categoria IS NULL OR i.categoria = :categoria) AND " +
-           "(:usuarioId IS NULL OR i.usuario.id = :usuarioId)")
+           "(:usuarioId IS NULL OR i.usuario.empleadoId = :usuarioId)")
     List<Incidencia> findByFiltros(@Param("estado") EstadoIncidencia estado,
                                    @Param("prioridad") Prioridad prioridad,
                                    @Param("categoria") CategoriaIncidencia categoria,
@@ -81,7 +81,7 @@ public interface IncidenciaRepositoryImpl extends JpaRepository<Incidencia, Long
            "(:estado IS NULL OR i.estado = :estado) AND " +
            "(:prioridad IS NULL OR i.prioridad = :prioridad) AND " +
            "(:categoria IS NULL OR i.categoria = :categoria) AND " +
-           "(:usuarioId IS NULL OR i.usuario.id = :usuarioId)")
+           "(:usuarioId IS NULL OR i.usuario.empleadoId = :usuarioId)")
     Page<Incidencia> findByFiltrosPaginados(@Param("estado") EstadoIncidencia estado,
                                             @Param("prioridad") Prioridad prioridad,
                                             @Param("categoria") CategoriaIncidencia categoria,

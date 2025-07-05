@@ -56,7 +56,7 @@
         
         <mat-nav-list class="sidebar-nav">
           <!-- Dashboard -->
-          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+          <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>dashboard</mat-icon>
             <span matListItemTitle>Dashboard</span>
           </a>
@@ -68,7 +68,7 @@
           </a>
           
           <!-- Nueva Incidencia -->
-          <a mat-list-item routerLink="/incidencias/nueva" routerLinkActive="active-link">
+          <a mat-list-item routerLink="/incidencias/nueva" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>add_circle</mat-icon>
             <span matListItemTitle>Nueva Incidencia</span>
           </a>
@@ -76,19 +76,19 @@
           <mat-divider></mat-divider>
           
           <!-- Gestión de Usuarios -->
-          <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link">
+          <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>people</mat-icon>
             <span matListItemTitle>Usuarios</span>
           </a>
           
           <!-- Reportes -->
-          <a mat-list-item routerLink="/reportes" routerLinkActive="active-link">
+          <a mat-list-item routerLink="/reportes" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>assessment</mat-icon>
             <span matListItemTitle>Reportes</span>
           </a>
           
           <!-- Configuración -->
-          <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link">
+          <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>settings</mat-icon>
             <span matListItemTitle>Configuración</span>
           </a>
