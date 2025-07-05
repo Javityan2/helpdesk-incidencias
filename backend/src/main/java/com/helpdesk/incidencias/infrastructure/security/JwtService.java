@@ -103,8 +103,12 @@ public class JwtService {
      * Valida un token JWT
      */
     public Boolean validateToken(String token, Usuario usuario) {
-        final String empleadoId = extractEmpleadoId(token);
-        return (empleadoId.equals(usuario.getEmpleadoId()) && !isTokenExpired(token));
+        try {
+            final String empleadoId = extractEmpleadoId(token);
+            return (empleadoId.equals(usuario.getEmpleadoId()) && !isTokenExpired(token));
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     /**

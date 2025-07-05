@@ -15,6 +15,8 @@ import com.helpdesk.incidencias.domain.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,14 @@ public class IncidenciaService {
      * Crea una nueva incidencia desde DTO
      */
     public IncidenciaDTO crearIncidencia(IncidenciaCreateRequest request) {
+        // Obtener usuario autenticado del contexto de seguridad
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        
+        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
+        
         Incidencia incidencia = new Incidencia();
         incidencia.setTitulo(request.getTitulo());
         incidencia.setDescripcion(request.getDescripcion());
@@ -54,6 +64,7 @@ public class IncidenciaService {
         incidencia.setCategoria(request.getCategoria());
         incidencia.setTiempoEstimadoHoras(request.getTiempoEstimadoHoras());
         incidencia.setComentariosInternos(request.getComentariosInternos());
+        incidencia.setUsuario(usuarioAutenticado); // Asignar usuario autenticado
         
         Incidencia incidenciaCreada = crearIncidencia(incidencia);
         return convertirADTO(incidenciaCreada);
@@ -113,8 +124,13 @@ public class IncidenciaService {
      * Cambia el estado de una incidencia y retorna DTO
      */
     public IncidenciaDTO cambiarEstadoIncidencia(Long id, EstadoIncidencia nuevoEstado) {
-        // TODO: Obtener usuario del contexto de seguridad
-        Usuario usuario = new Usuario(); // Temporal
+        // Obtener usuario autenticado del contexto de seguridad
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        
+        Usuario usuario = (Usuario) authentication.getPrincipal();
         Incidencia incidencia = cambiarEstado(id, nuevoEstado, usuario);
         return convertirADTO(incidencia);
     }
@@ -123,8 +139,13 @@ public class IncidenciaService {
      * Asigna técnico a incidencia y retorna DTO
      */
     public IncidenciaDTO asignarTecnico(Long id, Long tecnicoId) {
-        // TODO: Obtener usuario del contexto de seguridad
-        Usuario usuario = new Usuario(); // Temporal
+        // Obtener usuario autenticado del contexto de seguridad
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        
+        Usuario usuario = (Usuario) authentication.getPrincipal();
         Incidencia incidencia = asignarIncidencia(id, tecnicoId, usuario);
         return convertirADTO(incidencia);
     }

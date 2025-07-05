@@ -32,8 +32,17 @@ export class IncidenciaFormComponent implements OnInit {
     { value: 'SOFTWARE', label: 'Software' },
     { value: 'HARDWARE', label: 'Hardware' },
     { value: 'RED', label: 'Red' },
-    { value: 'USUARIO', label: 'Usuario' },
-    { value: 'OTRO', label: 'Otro' }
+    { value: 'SEGURIDAD', label: 'Seguridad' },
+    { value: 'ACCESO', label: 'Acceso' },
+    { value: 'IMPRESION', label: 'Impresión' },
+    { value: 'EMAIL', label: 'Email' },
+    { value: 'BASE_DATOS', label: 'Base de Datos' },
+    { value: 'SERVIDOR', label: 'Servidor' },
+    { value: 'APLICACION', label: 'Aplicación' },
+    { value: 'CONFIGURACION', label: 'Configuración' },
+    { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
+    { value: 'CAPACITACION', label: 'Capacitación' },
+    { value: 'OTROS', label: 'Otros' }
   ];
 
   constructor(
