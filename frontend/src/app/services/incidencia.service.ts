@@ -93,6 +93,26 @@ export class IncidenciaService {
       );
   }
 
+  /**
+   * Cambiar el estado de una incidencia
+   */
+  cambiarEstado(id: number, nuevoEstado: string) {
+    return this.http.patch<ApiResponse<Incidencia>>(
+      `${this.apiUrl}/${id}/estado?nuevoEstado=${nuevoEstado}`,
+      {}
+    );
+  }
+
+  /**
+   * Asignar técnico a una incidencia
+   */
+  asignarTecnico(id: number, tecnicoId: number) {
+    return this.http.patch<ApiResponse<Incidencia>>(
+      `${this.apiUrl}/${id}/asignar?tecnicoId=${tecnicoId}`,
+      {}
+    );
+  }
+
   private getAuthHeaders(): HttpHeaders {
     return this.authService.getAuthHeaders();
   }

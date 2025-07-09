@@ -171,4 +171,89 @@ public class AuthController {
                 .body(ApiResponse.error("Error en el servidor: " + e.getMessage()));
         }
     }
+    
+    /**
+     * Endpoint de prueba para verificar el token
+     */
+    @GetMapping("/test-token")
+    public ResponseEntity<ApiResponse<String>> testToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            System.out.println("AuthController - Header recibido: " + authHeader);
+            
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                System.out.println("AuthController - Token extraído: " + token.substring(0, Math.min(50, token.length())) + "...");
+                
+                String empleadoId = jwtService.extractEmpleadoId(token);
+                System.out.println("AuthController - EmpleadoId extraído: " + empleadoId);
+                
+                return ResponseEntity.ok(ApiResponse.success("Token válido para: " + empleadoId));
+            } else {
+                System.out.println("AuthController - Header inválido o faltante");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Token no proporcionado o formato inválido"));
+            }
+        } catch (Exception e) {
+            System.out.println("AuthController - Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Token inválido: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint de prueba detallado para verificar el token
+     */
+    @GetMapping("/debug-token")
+    public ResponseEntity<ApiResponse<String>> debugToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            System.out.println("AuthController - debugToken - Header recibido: " + authHeader);
+            
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                System.out.println("AuthController - debugToken - Token extraído: " + token.substring(0, Math.min(50, token.length())) + "...");
+                System.out.println("AuthController - debugToken - Token length: " + token.length());
+                
+                // Verificar si el token tiene el formato correcto (3 partes separadas por puntos)
+                String[] parts = token.split("\\.");
+                System.out.println("AuthController - debugToken - Partes del token: " + parts.length);
+                
+                if (parts.length != 3) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Token malformado: debe tener 3 partes separadas por puntos"));
+                }
+                
+                try {
+                    String empleadoId = jwtService.extractEmpleadoId(token);
+                    System.out.println("AuthController - debugToken - EmpleadoId extraído: " + empleadoId);
+                    
+                    return ResponseEntity.ok(ApiResponse.success("Token válido para: " + empleadoId + " (partes: " + parts.length + ")"));
+                } catch (Exception e) {
+                    System.out.println("AuthController - debugToken - Error al extraer empleadoId: " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("Error al procesar token: " + e.getMessage()));
+                }
+            } else {
+                System.out.println("AuthController - debugToken - Header inválido o faltante");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Token no proporcionado o formato inválido"));
+            }
+        } catch (Exception e) {
+            System.out.println("AuthController - debugToken - Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Token inválido: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Endpoint de prueba para verificar autenticación
+     */
+    @GetMapping("/test-auth")
+    public ResponseEntity<ApiResponse<String>> testAuth() {
+        try {
+            return ResponseEntity.ok(ApiResponse.success("Autenticación exitosa"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Error de autenticación: " + e.getMessage()));
+        }
+    }
 } 

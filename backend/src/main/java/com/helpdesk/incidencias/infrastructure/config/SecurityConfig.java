@@ -42,9 +42,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -70,6 +72,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll() // Para desarrollo
+                .requestMatchers("/error").permitAll() // Permitir acceso a páginas de error
                 
                 // Endpoints de usuarios (solo admin)
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
@@ -79,6 +82,15 @@ public class SecurityConfig {
                 
                 // Endpoints de comentarios
                 .requestMatchers("/api/comentarios/**").authenticated()
+                
+                // Endpoints de notificaciones
+                .requestMatchers("/api/notificaciones/**").authenticated()
+                
+                // Endpoints de favoritos
+                .requestMatchers("/api/favoritos/**").authenticated()
+                
+                // Endpoints de borradores
+                .requestMatchers("/api/borradores/**").authenticated()
                 
                 // Endpoints de diagramas y análisis
                 .requestMatchers("/api/diagramas/**", "/api/analisis/**").authenticated()

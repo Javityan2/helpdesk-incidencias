@@ -1,0 +1,220 @@
+// Estilos para el componente de favoritos
+
+.incidencia-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border-left: 4px solid #dc3545;
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .card-title {
+    color: #495057;
+    font-weight: 600;
+    
+    a {
+      color: inherit;
+      
+      &:hover {
+        color: #007bff;
+      }
+    }
+  }
+  
+  .card-text {
+    line-height: 1.5;
+  }
+}
+
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.5rem;
+    
+    h5 {
+      font-weight: 600;
+      color: #495057;
+    }
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+.badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.btn {
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+  
+  &.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .incidencia-card {
+    .card-body {
+      padding: 1rem;
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container-fluid {
+  animation: fadeIn 0.5s ease-out;
+}
+
+// Estilos para el header
+h2 {
+  color: #495057;
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+// Mejoras visuales para los iconos
+.fas {
+  color: #007bff;
+  
+  &.fa-heart {
+    color: #dc3545;
+  }
+  
+  &.fa-heart-broken {
+    color: #dc3545;
+  }
+}
+
+// Estilos para las estadísticas
+.card.text-center {
+  .card-body {
+    padding: 1.5rem 1rem;
+    
+    h3 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    small {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Estilos para el estado vacío
+.text-center.py-5 {
+  .fas {
+    opacity: 0.3;
+  }
+  
+  h4 {
+    font-weight: 500;
+  }
+  
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+// Hover effects para enlaces
+a {
+  transition: color 0.3s ease;
+  
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+// Estilos para los badges de estado
+.badge {
+  &.bg-danger {
+    background-color: #dc3545 !important;
+  }
+  
+  &.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+  }
+  
+  &.bg-info {
+    background-color: #17a2b8 !important;
+  }
+  
+  &.bg-success {
+    background-color: #28a745 !important;
+  }
+  
+  &.bg-secondary {
+    background-color: #6c757d !important;
+  }
+} 

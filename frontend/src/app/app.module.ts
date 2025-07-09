@@ -41,6 +41,10 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 // Services
 import { AuthService } from './services/auth.service';
 import { IncidenciaService } from './services/incidencia.service';
+import { ComentarioService } from './services/comentario.service';
+import { NotificationService } from './services/notification.service';
+import { FavoritesService } from './services/favorites.service';
+import { DraftsService } from './services/drafts.service';
 
 // Components
 import { LoginComponent } from './components/auth/login/login.component';
@@ -48,6 +52,12 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IncidenciasListComponent } from './components/incidencias/incidencias-list/incidencias-list.component';
 import { IncidenciaDetailComponent } from './components/incidencias/incidencia-detail/incidencia-detail.component';
 import { IncidenciaFormComponent } from './components/incidencias/incidencia-form/incidencia-form.component';
+import { ComentariosComponent } from './components/incidencias/comentarios/comentarios.component';
+import { LayoutComponent } from './components/layout/layout.component';
+import { UserProfileComponent } from './components/user/user-profile.component';
+import { UserFavoritesComponent } from './components/user/user-favorites.component';
+import { UserDraftsComponent } from './components/user/user-drafts.component';
+import { NotificationsPanelComponent } from './components/shared/notifications-panel.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +66,13 @@ import { IncidenciaFormComponent } from './components/incidencias/incidencia-for
     DashboardComponent,
     IncidenciasListComponent,
     IncidenciaDetailComponent,
-    IncidenciaFormComponent
+    IncidenciaFormComponent,
+    ComentariosComponent,
+    LayoutComponent,
+    UserProfileComponent,
+    UserFavoritesComponent,
+    UserDraftsComponent,
+    NotificationsPanelComponent
   ],
   imports: [
     BrowserModule,
@@ -93,6 +109,10 @@ import { IncidenciaFormComponent } from './components/incidencias/incidencia-for
   providers: [
     AuthService,
     IncidenciaService,
+    ComentarioService,
+    NotificationService,
+    FavoritesService,
+    DraftsService,
     AuthGuard,
     {
       provide: HTTP_INTERCEPTORS,

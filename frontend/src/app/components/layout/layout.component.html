@@ -13,7 +13,7 @@
     <span class="toolbar-spacer"></span>
     
     <!-- Notificaciones -->
-    <button mat-icon-button [matBadge]="3" matBadgeColor="warn" class="notification-button">
+    <button mat-icon-button [matBadge]="notificacionesCount" matBadgeColor="warn" class="notification-button" (click)="abrirNotificaciones()">
       <mat-icon>notifications</mat-icon>
     </button>
     
@@ -22,27 +22,64 @@
       <mat-icon>account_circle</mat-icon>
     </button>
     
-    <mat-menu #userMenu="matMenu">
+    <mat-menu #userMenu="matMenu" class="user-menu">
       <div class="user-menu-header">
-        <mat-icon>person</mat-icon>
-        <span>{{ currentUser?.nombre || 'Usuario' }}</span>
+        <div class="user-info">
+          <mat-icon class="user-avatar">account_circle</mat-icon>
+          <div class="user-details">
+            <span class="user-name">{{ currentUser?.nombre || 'Usuario' }} {{ currentUser?.apellido || '' }}</span>
+            <span class="user-email">{{ currentUser?.email || 'usuario@empresa.com' }}</span>
+            <span class="user-role">{{ getRolDisplayName(currentUser?.rol) }}</span>
+          </div>
+        </div>
       </div>
       <mat-divider></mat-divider>
+      
+      <!-- Acciones principales -->
       <button mat-menu-item (click)="navigateTo('/dashboard')">
         <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
+        <span>Inicio</span>
       </button>
-      <button mat-menu-item (click)="navigateTo('/profile')">
+      <button mat-menu-item (click)="navigateTo('/perfil')">
         <mat-icon>person</mat-icon>
         <span>Mi Perfil</span>
       </button>
+      <button mat-menu-item (click)="navigateTo('/mis-incidencias')">
+        <mat-icon>assignment</mat-icon>
+        <span>Mis Incidencias</span>
+      </button>
+      
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="logout()">
+      
+      <!-- Acciones secundarias -->
+      <button mat-menu-item (click)="navigateTo('/favoritos')">
+        <mat-icon>favorite</mat-icon>
+        <span>Favoritos</span>
+      </button>
+      <button mat-menu-item (click)="navigateTo('/borradores')">
+        <mat-icon>drafts</mat-icon>
+        <span>Borradores</span>
+      </button>
+      <button mat-menu-item (click)="navigateTo('/configuracion')">
+        <mat-icon>settings</mat-icon>
+        <span>Configuración</span>
+      </button>
+      
+      <mat-divider></mat-divider>
+      
+      <!-- Cerrar sesión -->
+      <button mat-menu-item (click)="logout()" class="logout-button">
         <mat-icon>exit_to_app</mat-icon>
         <span>Cerrar Sesión</span>
       </button>
     </mat-menu>
   </mat-toolbar>
+
+  <!-- Panel de notificaciones -->
+  <app-notifications-panel 
+    [isOpen]="notificationsPanelOpen"
+    (closePanel)="cerrarNotificaciones()">
+  </app-notifications-panel>
 
   <!-- Contenedor principal con sidebar -->
   <div class="main-container">
@@ -55,40 +92,70 @@
                    [attr.role]="'navigation'">
         
         <mat-nav-list class="sidebar-nav">
-          <!-- Dashboard -->
+          <!-- Dashboard/Inicio -->
           <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
+            <span matListItemTitle>Inicio</span>
           </a>
           
-          <!-- Incidencias -->
+          <!-- Sección de Incidencias -->
+          <div class="nav-section-header">
+            <span>Gestión de Incidencias</span>
+          </div>
+          
           <a mat-list-item routerLink="/incidencias" routerLinkActive="active-link">
             <mat-icon matListItemIcon>bug_report</mat-icon>
-            <span matListItemTitle>Incidencias</span>
+            <span matListItemTitle>Todas las Incidencias</span>
           </a>
           
-          <!-- Nueva Incidencia -->
+          <a mat-list-item routerLink="/mis-incidencias" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>assignment</mat-icon>
+            <span matListItemTitle>Mis Incidencias</span>
+          </a>
+          
           <a mat-list-item routerLink="/incidencias/nueva" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
             <mat-icon matListItemIcon>add_circle</mat-icon>
             <span matListItemTitle>Nueva Incidencia</span>
           </a>
           
-          <mat-divider></mat-divider>
+          <!-- Sección Personal -->
+          <div class="nav-section-header">
+            <span>Personal</span>
+          </div>
           
-          <!-- Gestión de Usuarios -->
-          <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+          <a mat-list-item routerLink="/favoritos" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>favorite</mat-icon>
+            <span matListItemTitle>Favoritos</span>
+            <span class="badge" *ngIf="favoritosCount > 0">{{ favoritosCount }}</span>
+          </a>
+          
+          <a mat-list-item routerLink="/borradores" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>drafts</mat-icon>
+            <span matListItemTitle>Borradores</span>
+            <span class="badge" *ngIf="borradoresCount > 0">{{ borradoresCount }}</span>
+          </a>
+          
+          <!-- Sección Administrativa (solo para roles específicos) -->
+          <div class="nav-section-header" *ngIf="puedeAccederAdmin()">
+            <span>Administración</span>
+          </div>
+          
+          <a mat-list-item routerLink="/usuarios" routerLinkActive="active-link" *ngIf="puedeAccederAdmin()">
             <mat-icon matListItemIcon>people</mat-icon>
             <span matListItemTitle>Usuarios</span>
           </a>
           
-          <!-- Reportes -->
-          <a mat-list-item routerLink="/reportes" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+          <a mat-list-item routerLink="/reportes" routerLinkActive="active-link" *ngIf="puedeAccederAdmin()">
             <mat-icon matListItemIcon>assessment</mat-icon>
             <span matListItemTitle>Reportes</span>
           </a>
           
           <!-- Configuración -->
-          <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+          <div class="nav-section-header">
+            <span>Sistema</span>
+          </div>
+          
+          <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link">
             <mat-icon matListItemIcon>settings</mat-icon>
             <span matListItemTitle>Configuración</span>
           </a>

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { IncidenciaService, Incidencia } from '../../../services/incidencia.service';
 import { DiagramaService } from '../../../services/diagrama.service';
+import { ComentarioService, Comentario } from '../../../services/comentario.service';
 import { Chart } from 'chart.js';
 
 @Component({
@@ -17,6 +18,7 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
   loading = false;
   error = '';
   activeTab = 'general';
+  usuarioActual: any = null; // TODO: Obtener del servicio de autenticación
 
   // Propiedades para diagramas
   diagramaFlujo = '';
@@ -28,17 +30,36 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
   paretoData: any[] = [];
   paretoChart: Chart | null = null;
 
+  // Gestión de estados y técnicos
+  estadosDisponibles = [
+    { codigo: 'ABIERTA', descripcion: 'Abierta' },
+    { codigo: 'EN_PROCESO', descripcion: 'En Proceso' },
+    { codigo: 'EN_ESPERA', descripcion: 'En Espera' },
+    { codigo: 'RESUELTA', descripcion: 'Resuelta' },
+    { codigo: 'CERRADA', descripcion: 'Cerrada' },
+    { codigo: 'CANCELADA', descripcion: 'Cancelada' }
+  ];
+  estadoSeleccionado: string = '';
+  tecnicos: any[] = [];
+  tecnicoSeleccionado: number | null = null;
+  guardandoEstado = false;
+  mensajeEstado = '';
+  errorEstado = '';
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private incidenciaService: IncidenciaService,
-    private diagramaService: DiagramaService
+    private diagramaService: DiagramaService,
+    private comentarioService: ComentarioService
   ) {}
 
   ngOnInit(): void {
     this.cargarIncidencia();
     this.inicializarDiagramas();
     this.diagramaService.inicializarMermaid();
+    this.obtenerUsuarioActual();
+    this.cargarTecnicos();
   }
 
   ngAfterViewInit(): void {
@@ -46,6 +67,19 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.renderizarDiagramas();
     }, 100);
+  }
+
+  obtenerUsuarioActual(): void {
+    // TODO: Implementar obtención del usuario actual desde el servicio de autenticación
+    // Por ahora, usamos un usuario de ejemplo
+    this.usuarioActual = {
+      id: 1,
+      nombre: 'Juan',
+      apellido: 'Pérez',
+      email: 'juan.perez@empresa.com',
+      rol: 'TECNICO',
+      departamento: 'IT'
+    };
   }
 
   cargarIncidencia(): void {
@@ -65,6 +99,9 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
           this.loading = false;
           this.generarDiagramaFlujo();
           this.generarDiagramaIshikawa();
+          // Inicializar valores de estado y técnico
+          this.estadoSeleccionado = data.estado;
+          this.tecnicoSeleccionado = data.asignado ? data.asignado.id : null;
           setTimeout(() => {
             this.renderizarDiagramas();
           }, 100);
@@ -74,6 +111,60 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
           this.error = 'Error al cargar la incidencia. Inténtalo de nuevo.';
           this.loading = false;
         }
+      });
+  }
+
+  cargarTecnicos(): void {
+    // TODO: Reemplazar por llamada real al backend para obtener técnicos
+    this.tecnicos = [
+      { id: 2, nombre: 'María', apellido: 'García', email: 'maria.garcia@empresa.com' },
+      { id: 3, nombre: 'Carlos', apellido: 'López', email: 'carlos.lopez@empresa.com' }
+    ];
+  }
+
+  puedeGestionarEstado(): boolean {
+    if (!this.usuarioActual) return false;
+    const rolesPermitidos = ['ADMIN', 'TECNICO', 'SUPERVISOR'];
+    return rolesPermitidos.includes(this.usuarioActual.rol);
+  }
+
+  guardarCambiosEstado(): void {
+    if (!this.incidencia) return;
+    this.guardandoEstado = true;
+    this.mensajeEstado = '';
+    this.errorEstado = '';
+
+    // Cambiar estado si es diferente
+    const cambios: Promise<any>[] = [];
+    if (this.estadoSeleccionado && this.estadoSeleccionado !== this.incidencia.estado) {
+      cambios.push(
+        this.incidenciaService.cambiarEstado(this.incidencia.id, this.estadoSeleccionado).toPromise()
+      );
+    }
+    // Asignar técnico si es diferente
+    if (this.tecnicoSeleccionado !== (this.incidencia.asignado ? this.incidencia.asignado.id : null)) {
+      if (this.tecnicoSeleccionado) {
+        cambios.push(
+          this.incidenciaService.asignarTecnico(this.incidencia.id, this.tecnicoSeleccionado).toPromise()
+        );
+      }
+    }
+    if (cambios.length === 0) {
+      this.guardandoEstado = false;
+      this.mensajeEstado = 'No hay cambios para guardar.';
+      return;
+    }
+    Promise.all(cambios)
+      .then(() => {
+        this.mensajeEstado = 'Cambios guardados correctamente.';
+        this.cargarIncidencia();
+      })
+      .catch((err) => {
+        this.errorEstado = 'Error al guardar cambios.';
+        console.error(err);
+      })
+      .finally(() => {
+        this.guardandoEstado = false;
       });
   }
 
@@ -242,6 +333,17 @@ export class IncidenciaDetailComponent implements OnInit, AfterViewInit {
         );
       }
     }, 100);
+  }
+
+  // Métodos para manejar eventos de comentarios
+  onComentarioAgregado(comentario: Comentario): void {
+    console.log('Comentario agregado:', comentario);
+    // Aquí puedes agregar lógica adicional cuando se agrega un comentario
+  }
+
+  onComentarioEliminado(comentarioId: number): void {
+    console.log('Comentario eliminado:', comentarioId);
+    // Aquí puedes agregar lógica adicional cuando se elimina un comentario
   }
 
   getPrioridadClass(prioridad: string): string {

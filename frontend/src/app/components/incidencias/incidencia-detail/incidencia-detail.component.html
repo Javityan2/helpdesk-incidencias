@@ -110,6 +110,42 @@
                 <h4>{{ incidencia.titulo }}</h4>
                 <p class="text-muted">{{ incidencia.descripcion }}</p>
                 
+                <!-- Controles de gestión de estado y técnico -->
+                <div *ngIf="puedeGestionarEstado()" class="mb-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                          <label class="form-label">Estado de la Incidencia</label>
+                          <select class="form-select" [(ngModel)]="estadoSeleccionado">
+                            <option *ngFor="let estado of estadosDisponibles" [value]="estado.codigo">
+                              {{ estado.descripcion }}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Técnico Asignado</label>
+                          <select class="form-select" [(ngModel)]="tecnicoSeleccionado">
+                            <option [ngValue]="null">Sin asignar</option>
+                            <option *ngFor="let tecnico of tecnicos" [ngValue]="tecnico.id">
+                              {{ tecnico.nombre }} {{ tecnico.apellido }} ({{ tecnico.email }})
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="mt-3 d-flex gap-2">
+                        <button class="btn btn-primary" (click)="guardarCambiosEstado()" [disabled]="guardandoEstado">
+                          <i class="fas fa-save me-2"></i>
+                          Guardar Cambios
+                        </button>
+                        <span *ngIf="mensajeEstado" class="text-success ms-2">{{ mensajeEstado }}</span>
+                        <span *ngIf="errorEstado" class="text-danger ms-2">{{ errorEstado }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Fin controles de gestión -->
+                
                 <div class="row mt-4">
                   <div class="col-md-6">
                     <h6>Información de la Incidencia</h6>
@@ -182,6 +218,18 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Sección de Comentarios -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <app-comentarios 
+                  [incidenciaId]="incidencia.id"
+                  [usuarioActual]="usuarioActual"
+                  (comentarioAgregado)="onComentarioAgregado($event)"
+                  (comentarioEliminado)="onComentarioEliminado($event)">
+                </app-comentarios>
               </div>
             </div>
           </div>

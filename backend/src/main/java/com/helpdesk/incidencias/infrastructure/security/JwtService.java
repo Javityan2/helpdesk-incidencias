@@ -85,11 +85,23 @@ public class JwtService {
      * Extrae todos los claims del token
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        System.out.println("JwtService - extractAllClaims - Token recibido: " + token.substring(0, Math.min(50, token.length())) + "...");
+        System.out.println("JwtService - extractAllClaims - Token length: " + token.length());
+        
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            
+            System.out.println("JwtService - extractAllClaims - Claims extraídos exitosamente");
+            return claims;
+        } catch (Exception e) {
+            System.out.println("JwtService - extractAllClaims - Error: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
     }
     
     /**
@@ -104,9 +116,25 @@ public class JwtService {
      */
     public Boolean validateToken(String token, Usuario usuario) {
         try {
+            System.out.println("JwtService - validateToken - Iniciando validación");
+            System.out.println("JwtService - validateToken - Token recibido: " + token.substring(0, Math.min(50, token.length())) + "...");
+            System.out.println("JwtService - validateToken - Usuario: " + usuario.getEmpleadoId());
+            
             final String empleadoId = extractEmpleadoId(token);
-            return (empleadoId.equals(usuario.getEmpleadoId()) && !isTokenExpired(token));
+            System.out.println("JwtService - validateToken - EmpleadoId extraído: " + empleadoId);
+            System.out.println("JwtService - validateToken - EmpleadoId del usuario: " + usuario.getEmpleadoId());
+            System.out.println("JwtService - validateToken - EmpleadoIds coinciden: " + empleadoId.equals(usuario.getEmpleadoId()));
+            
+            boolean isExpired = isTokenExpired(token);
+            System.out.println("JwtService - validateToken - Token expirado: " + isExpired);
+            
+            boolean isValid = (empleadoId.equals(usuario.getEmpleadoId()) && !isExpired);
+            System.out.println("JwtService - validateToken - Token válido: " + isValid);
+            
+            return isValid;
         } catch (Exception e) {
+            System.out.println("JwtService - validateToken - Error: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

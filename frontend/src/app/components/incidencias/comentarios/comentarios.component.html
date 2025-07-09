@@ -1,0 +1,219 @@
+<div class="comentarios-container">
+  <!-- Header -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+          <i class="fas fa-comments me-2"></i>
+          Comentarios ({{ comentarios.length }})
+        </h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary btn-sm" (click)="toggleFormulario()">
+            <i class="fas fa-plus me-2"></i>
+            Nuevo Comentario
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body py-2">
+          <div class="d-flex align-items-center gap-3">
+            <label class="form-label mb-0">Filtrar por tipo:</label>
+            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="filtroTipo" (change)="cambiarFiltro()">
+              <option [ngValue]="null">Todos los tipos</option>
+              <option *ngFor="let tipo of tiposComentario" [value]="tipo.valor">
+                <i [class]="tipo.icono"></i> {{ tipo.etiqueta }}
+              </option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" (click)="limpiarFiltro()">
+              <i class="fas fa-times me-1"></i>
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para nuevo comentario -->
+  <div class="row mb-4" *ngIf="mostrarFormulario">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="fas fa-edit me-2"></i>
+            Nuevo Comentario
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <label class="form-label">Contenido</label>
+                <textarea 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="Escribe tu comentario aquí..."
+                  [(ngModel)]="nuevoComentario"
+                  [disabled]="loading">
+                </textarea>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Tipo de Comentario</label>
+                <select class="form-select" [(ngModel)]="tipoComentario" [disabled]="loading">
+                  <option *ngFor="let tipo of tiposComentario" [value]="tipo.valor">
+                    <i [class]="tipo.icono"></i> {{ tipo.etiqueta }}
+                  </option>
+                </select>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary" (click)="agregarComentario()" [disabled]="loading || !nuevoComentario.trim()">
+                  <i class="fas fa-paper-plane me-2"></i>
+                  Enviar
+                </button>
+                <button class="btn btn-outline-secondary" (click)="cancelarComentario()" [disabled]="loading">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando comentarios...</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="row" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de comentarios -->
+  <div class="row" *ngIf="!loading && !error">
+    <div class="col-12">
+      <div class="comentarios-list">
+        <div *ngFor="let comentario of getComentariosFiltrados()" class="comentario-item">
+          <!-- Verificar permisos para comentarios internos -->
+          <div *ngIf="!esComentarioInterno(comentario) || puedeVerComentarioInterno(comentario)">
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar me-3">
+                      <i class="fas fa-user-circle fa-2x text-muted"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0">{{ getNombreCompletoUsuario(comentario) }}</h6>
+                      <small class="text-muted">
+                        <i [class]="getIconoTipoComentario(comentario)" class="me-1"></i>
+                        <span [class]="getClaseTipoComentario(comentario)">
+                          {{ comentario.tipo }}
+                        </span>
+                        <span class="ms-2">
+                          {{ comentario.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                        </span>
+                      </small>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button 
+                      *ngIf="puedeEliminarComentario(comentario)"
+                      class="btn btn-sm btn-outline-danger" 
+                      (click)="eliminarComentario(comentario.id!)"
+                      [disabled]="loading">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div class="comentario-contenido">
+                  <p class="mb-0">{{ comentario.contenido }}</p>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="mt-2" *ngIf="comentario.usuarioDepartamento">
+                  <small class="text-muted">
+                    <i class="fas fa-building me-1"></i>
+                    {{ comentario.usuarioDepartamento }}
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mensaje cuando no hay comentarios -->
+        <div *ngIf="getComentariosFiltrados().length === 0" class="text-center py-4">
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle fa-2x mb-3"></i>
+            <h6>No hay comentarios</h6>
+            <p class="mb-0">Sé el primero en agregar un comentario a esta incidencia.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas de comentarios -->
+  <div class="row mt-4" *ngIf="comentarios.length > 0">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">
+            <i class="fas fa-chart-bar me-2"></i>
+            Estadísticas de Comentarios
+          </h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3 text-center">
+              <div class="stat-item">
+                <h4 class="text-primary">{{ comentarios.length }}</h4>
+                <small class="text-muted">Total</small>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div class="stat-item">
+                <h4 class="text-info">{{ getComentariosTecnicosCount() }}</h4>
+                <small class="text-muted">Técnicos</small>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div class="stat-item">
+                <h4 class="text-warning">{{ getComentariosInternosCount() }}</h4>
+                <small class="text-muted">Internos</small>
+              </div>
+            </div>
+            <div class="col-md-3 text-center">
+              <div class="stat-item">
+                <h4 class="text-success">{{ getComentariosSolucionCount() }}</h4>
+                <small class="text-muted">Soluciones</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

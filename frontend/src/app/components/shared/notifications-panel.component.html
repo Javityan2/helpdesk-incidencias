@@ -1,0 +1,92 @@
+<div class="notifications-panel" [class.open]="isOpen">
+  <div class="notifications-header">
+    <h5 class="mb-0">
+      <i class="fas fa-bell me-2"></i>
+      Notificaciones
+    </h5>
+    <div class="header-actions">
+      <button class="btn btn-sm btn-outline-primary" (click)="marcarTodasComoLeidas()" 
+              [disabled]="getContadorNoLeidas() === 0">
+        <i class="fas fa-check-double me-1"></i>
+        Marcar todas como leídas
+      </button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="cerrarPanel()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="notifications-loading" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando notificaciones...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="notifications-error" *ngIf="error">
+    <div class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {{ error }}
+    </div>
+  </div>
+
+  <!-- Lista de notificaciones -->
+  <div class="notifications-content" *ngIf="!loading && !error">
+    <div *ngIf="notificaciones.length === 0" class="no-notifications">
+      <i class="fas fa-bell-slash text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+      <h6 class="text-muted mt-3">No hay notificaciones</h6>
+      <p class="text-muted small">Las nuevas notificaciones aparecerán aquí.</p>
+    </div>
+
+    <div *ngIf="notificaciones.length > 0" class="notifications-list">
+      <div *ngFor="let notificacion of notificaciones" 
+           class="notification-item" 
+           [class.unread]="!notificacion.leida"
+           (click)="marcarComoLeida(notificacion.id)">
+        
+        <div class="notification-icon">
+          <i [class]="getTipoIcon(notificacion.tipo)" [class]="getTipoClass(notificacion.tipo)"></i>
+        </div>
+        
+        <div class="notification-content">
+          <div class="notification-header">
+            <h6 class="notification-title mb-1">{{ notificacion.titulo }}</h6>
+            <small class="notification-time text-muted">
+              {{ notificacion.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+            </small>
+          </div>
+          
+          <p class="notification-message mb-2">{{ notificacion.mensaje }}</p>
+          
+          <div class="notification-actions">
+            <button class="btn btn-sm btn-outline-primary" 
+                    *ngIf="notificacion.incidenciaId"
+                    (click)="navegarAIncidencia(notificacion.incidenciaId)">
+              <i class="fas fa-eye me-1"></i>
+              Ver Incidencia
+            </button>
+            
+            <button class="btn btn-sm btn-outline-danger" 
+                    (click)="eliminarNotificacion(notificacion.id); $event.stopPropagation()">
+              <i class="fas fa-trash me-1"></i>
+              Eliminar
+            </button>
+          </div>
+        </div>
+        
+        <div class="notification-status" *ngIf="!notificacion.leida">
+          <div class="unread-indicator"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="notifications-footer" *ngIf="notificaciones.length > 0">
+    <small class="text-muted">
+      {{ getContadorNoLeidas() }} sin leer de {{ notificaciones.length }} total
+    </small>
+  </div>
+</div> 

@@ -1,0 +1,162 @@
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-0">
+            <i class="fas fa-drafts me-2"></i>
+            Mis Borradores
+          </h2>
+          <p class="text-muted mb-0">Incidencias guardadas como borradores</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" (click)="cargarBorradores()" [disabled]="loading">
+            <i class="fas fa-sync-alt me-2"></i>
+            Actualizar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando borradores...</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="row" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de borradores -->
+  <div class="row" *ngIf="!loading && !error">
+    <div class="col-12">
+      <!-- Estadísticas -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h3 class="text-primary mb-1">{{ borradores.length }}</h3>
+              <small class="text-muted">Total de Borradores</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h3 class="text-warning mb-1">{{ getContadorPorPrioridad('ALTA') }}</h3>
+              <small class="text-muted">Alta Prioridad</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h3 class="text-info mb-1">{{ getContadorPorPrioridad('MEDIA') }}</h3>
+              <small class="text-muted">Media Prioridad</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h3 class="text-success mb-1">{{ getContadorPorPrioridad('BAJA') }}</h3>
+              <small class="text-muted">Baja Prioridad</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de borradores -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Borradores Guardados
+          </h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="borradores.length === 0" class="text-center py-5">
+            <i class="fas fa-drafts text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+            <h4 class="text-muted mt-3">No tienes borradores</h4>
+            <p class="text-muted">Las incidencias que guardes como borrador aparecerán aquí.</p>
+            <button class="btn btn-primary">
+              <i class="fas fa-plus me-2"></i>
+              Crear Nueva Incidencia
+            </button>
+          </div>
+
+          <div *ngIf="borradores.length > 0">
+            <div class="row">
+              <div class="col-12" *ngFor="let borrador of borradores">
+                <div class="card mb-3 borrador-card">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-md-8">
+                        <div class="d-flex align-items-start">
+                          <div class="me-3">
+                            <i class="fas fa-drafts text-secondary" style="font-size: 1.5rem;"></i>
+                          </div>
+                          <div class="flex-grow-1">
+                            <h5 class="card-title mb-2">
+                              <a href="#" class="text-decoration-none">{{ borrador.titulo }}</a>
+                            </h5>
+                            <p class="card-text text-muted mb-2">{{ borrador.descripcion }}</p>
+                            <div class="d-flex gap-2 mb-2">
+                              <span [class]="getPrioridadClass(borrador.prioridad)">
+                                {{ borrador.prioridad }}
+                              </span>
+                              <span [class]="getEstadoClass(borrador.estado)">
+                                {{ borrador.estado }}
+                              </span>
+                              <span class="badge bg-secondary">{{ borrador.categoria }}</span>
+                            </div>
+                            <div class="text-muted small">
+                              <i class="fas fa-calendar me-1"></i>
+                              {{ borrador.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                              <span class="mx-2">•</span>
+                              <i class="fas fa-clock me-1"></i>
+                              Última actualización: {{ borrador.fechaActualizacion | date:'dd/MM/yyyy HH:mm' }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 text-end">
+                        <div class="d-flex gap-2 justify-content-end">
+                          <button class="btn btn-sm btn-outline-primary" (click)="editarBorrador(borrador.id)">
+                            <i class="fas fa-edit me-1"></i>
+                            Editar
+                          </button>
+                          <button class="btn btn-sm btn-outline-success" (click)="publicarBorrador(borrador.id)">
+                            <i class="fas fa-paper-plane me-1"></i>
+                            Publicar
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger" (click)="eliminarBorrador(borrador.id)">
+                            <i class="fas fa-trash me-1"></i>
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
