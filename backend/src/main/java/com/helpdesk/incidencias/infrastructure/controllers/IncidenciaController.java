@@ -199,6 +199,38 @@ public class IncidenciaController {
     }
     
     /**
+     * Obtener incidencias ordenadas por prioridad y frecuencia de búsqueda
+     */
+    @GetMapping("/ordenadas")
+    public ResponseEntity<ApiResponse<List<IncidenciaDTO>>> obtenerIncidenciasOrdenadas() {
+        try {
+            List<IncidenciaDTO> incidencias = incidenciaService.obtenerIncidenciasOrdenadas();
+            
+            return ResponseEntity.ok(ApiResponse.success("Incidencias ordenadas obtenidas", incidencias));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Error al obtener incidencias ordenadas: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Incrementar frecuencia de búsqueda de una incidencia
+     */
+    @PostMapping("/{id}/incrementar-busqueda")
+    public ResponseEntity<ApiResponse<String>> incrementarFrecuenciaBusqueda(@PathVariable Long id) {
+        try {
+            incidenciaService.incrementarFrecuenciaBusqueda(id);
+            
+            return ResponseEntity.ok(ApiResponse.success("Frecuencia de búsqueda incrementada"));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Error al incrementar frecuencia: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * Obtener estadísticas de incidencias
      */
     @GetMapping("/estadisticas")

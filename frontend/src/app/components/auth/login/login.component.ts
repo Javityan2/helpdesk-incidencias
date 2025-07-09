@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, LoginRequest } from '../../../services/auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -10,111 +8,61 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+  
+  loginData = {
+    identificador: '',
+    password: ''
+  };
+  
   loading = false;
-  hidePassword = true;
+  error = '';
+  showPassword = false;
 
   constructor(
-    private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router,
-    private snackBar: MatSnackBar
-  ) {
-    this.loginForm = this.formBuilder.group({
-      identificador: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
-  }
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // Si ya está autenticado, redirigir a incidencias
+    // Si ya está autenticado, redirigir al dashboard
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/incidencias']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
   onSubmit(): void {
-    if (this.loginForm.valid) {
-      this.loading = true;
-      const loginRequest: LoginRequest = this.loginForm.value;
+    if (!this.loginData.identificador || !this.loginData.password) {
+      this.error = 'Por favor, completa todos los campos';
+      return;
+    }
 
-      this.authService.login(loginRequest).subscribe({
+    this.loading = true;
+    this.error = '';
+
+    this.authService.login(this.loginData.identificador, this.loginData.password)
+      .subscribe({
         next: (response) => {
-          if (response.success) {
-            this.snackBar.open('Inicio de sesión exitoso', 'Cerrar', {
-              duration: 3000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-              panelClass: ['success-snackbar']
-            });
-            this.router.navigate(['/incidencias']);
-          } else {
-            this.snackBar.open(response.message || 'Credenciales inválidas', 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'center',
-              verticalPosition: 'top',
-              panelClass: ['error-snackbar']
-            });
-            // Detener el loading después de 2 segundos
-            setTimeout(() => {
-              this.loading = false;
-            }, 2000);
-          }
+          console.log('Login exitoso:', response);
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           console.error('Error en login:', error);
-          let errorMessage = 'Error al iniciar sesión. Verifique sus credenciales.';
-          
-          if (error.error?.message) {
-            errorMessage = error.error.message;
-          } else if (error.status === 401) {
-            errorMessage = 'Credenciales inválidas';
-          } else if (error.status === 0) {
-            errorMessage = 'No se puede conectar con el servidor. Verifique que el backend esté ejecutándose.';
-          }
-          
-          this.snackBar.open(errorMessage, 'Cerrar', {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'top',
-            panelClass: ['error-snackbar']
-          });
-          
-          // Detener el loading después de 2 segundos
-          setTimeout(() => {
-            this.loading = false;
-          }, 2000);
+          this.error = error.message || 'Error en el login. Verifica tus credenciales.';
+          this.loading = false;
         },
         complete: () => {
-          // Solo detener loading si no hubo éxito (ya se detiene en error)
-          if (!this.authService.isAuthenticated()) {
-            setTimeout(() => {
-              this.loading = false;
-            }, 2000);
-          }
+          this.loading = false;
         }
       });
-    } else {
-      this.markFormGroupTouched();
-    }
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      const control = this.loginForm.get(key);
-      control?.markAsTouched();
-    });
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
-  getErrorMessage(field: string): string {
-    const control = this.loginForm.get(field);
-    if (control?.hasError('required')) {
-      return 'Este campo es requerido';
+  onKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.onSubmit();
     }
-    if (control?.hasError('minlength')) {
-      const minLength = control.errors?.['minlength'].requiredLength;
-      return `Mínimo ${minLength} caracteres`;
-    }
-    return '';
   }
 } 

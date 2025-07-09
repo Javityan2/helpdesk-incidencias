@@ -723,6 +723,40 @@ public class IncidenciaService {
     }
     
     /**
+     * Obtiene incidencias ordenadas por prioridad (Alta → Baja) y frecuencia de búsqueda
+     */
+    @Transactional(readOnly = true)
+    public List<IncidenciaDTO> obtenerIncidenciasOrdenadas() {
+        List<Incidencia> incidencias = incidenciaRepository.findAllByOrderByPrioridadDescFrecuenciaBusquedaDesc();
+        return incidencias.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtener incidencias por prioridad específica ordenadas por frecuencia de búsqueda
+     */
+    @Transactional(readOnly = true)
+    public List<IncidenciaDTO> obtenerIncidenciasPorPrioridadOrdenadas(Prioridad prioridad) {
+        List<Incidencia> incidencias = incidenciaRepository.findByPrioridadOrderByFrecuenciaBusquedaDesc(prioridad);
+        return incidencias.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Incrementar frecuencia de búsqueda de una incidencia
+     */
+    public void incrementarFrecuenciaBusqueda(Long incidenciaId) {
+        Optional<Incidencia> incidenciaOpt = incidenciaRepository.findById(incidenciaId);
+        if (incidenciaOpt.isPresent()) {
+            Incidencia incidencia = incidenciaOpt.get();
+            incidencia.setFrecuenciaBusqueda(incidencia.getFrecuenciaBusqueda() + 1);
+            incidenciaRepository.save(incidencia);
+        }
+    }
+    
+    /**
      * Obtiene incidencias ordenadas por prioridad
      */
     @Transactional(readOnly = true)

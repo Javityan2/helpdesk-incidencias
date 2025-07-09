@@ -4,7 +4,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// Material Design
+// Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -29,41 +29,43 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 
-// Componentes
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LayoutComponent } from './components/layout/layout.component';
+
+// Guards
+import { AuthGuard } from './guards/auth.guard';
+
+// Interceptors
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+
+// Services
+import { AuthService } from './services/auth.service';
+import { IncidenciaService } from './services/incidencia.service';
+
+// Components
 import { LoginComponent } from './components/auth/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IncidenciasListComponent } from './components/incidencias/incidencias-list/incidencias-list.component';
 import { IncidenciaDetailComponent } from './components/incidencias/incidencia-detail/incidencia-detail.component';
 import { IncidenciaFormComponent } from './components/incidencias/incidencia-form/incidencia-form.component';
-import { LoadingComponent } from './components/shared/loading/loading.component';
-
-// Interceptors
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-
-// Módulos
-import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LayoutComponent,
     LoginComponent,
     DashboardComponent,
     IncidenciasListComponent,
     IncidenciaDetailComponent,
-    IncidenciaFormComponent,
-    LoadingComponent
+    IncidenciaFormComponent
   ],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
+    AppRoutingModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    AppRoutingModule,
-    // Material Design
+    BrowserAnimationsModule,
+    // Angular Material Modules
     MatToolbarModule,
     MatButtonModule,
     MatCardModule,
@@ -89,6 +91,9 @@ import { AppRoutingModule } from './app-routing.module';
     MatDividerModule
   ],
   providers: [
+    AuthService,
+    IncidenciaService,
+    AuthGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

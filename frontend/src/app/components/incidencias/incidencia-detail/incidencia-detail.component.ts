@@ -1,19 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IncidenciasService } from '../../../services/incidencias.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-
-interface Incidencia {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  estado: string;
-  prioridad: string;
-  categoria: string;
-  fechaCreacion: string;
-  usuario?: any;
-  tecnico?: any;
-}
+import { IncidenciaService, Incidencia } from '../../../services/incidencia.service';
 
 @Component({
   selector: 'app-incidencia-detail',
@@ -21,78 +8,70 @@ interface Incidencia {
   styleUrls: ['./incidencia-detail.component.scss']
 })
 export class IncidenciaDetailComponent implements OnInit {
+  
   incidencia: Incidencia | null = null;
-  comentarios: any[] = [];
   loading = false;
+  error = '';
+  activeTab = 'general';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private incidenciasService: IncidenciasService,
-    private snackBar: MatSnackBar
+    private incidenciaService: IncidenciaService
   ) {}
 
   ngOnInit(): void {
+    this.cargarIncidencia();
+  }
+
+  cargarIncidencia(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadIncidencia(Number(id));
+    if (!id) {
+      this.error = 'ID de incidencia no válido';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    this.incidenciaService.getIncidencia(+id)
+      .subscribe({
+        next: (data) => {
+          this.incidencia = data;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar incidencia:', error);
+          this.error = 'Error al cargar la incidencia. Inténtalo de nuevo.';
+          this.loading = false;
+        }
+      });
+  }
+
+  cambiarTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  getPrioridadClass(prioridad: string): string {
+    switch (prioridad) {
+      case 'ALTA': return 'badge bg-danger';
+      case 'MEDIA': return 'badge bg-warning';
+      case 'BAJA': return 'badge bg-success';
+      default: return 'badge bg-secondary';
     }
   }
 
-  loadIncidencia(id: number): void {
-    this.loading = true;
-    this.incidenciasService.getIncidencia(id).subscribe({
-      next: (response: any) => {
-        this.incidencia = response;
-        this.loadComentarios(id);
-      },
-      error: (error) => {
-        console.error('Error cargando incidencia:', error);
-        this.snackBar.open('Error al cargar la incidencia', 'Cerrar', {
-          duration: 5000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-          panelClass: ['error-snackbar']
-        });
-        this.router.navigate(['/incidencias']);
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
-  }
-
-  loadComentarios(incidenciaId: number): void {
-    // TODO: Implementar servicio de comentarios
-    this.comentarios = [];
-  }
-
-  editarIncidencia(): void {
-    if (this.incidencia) {
-      this.router.navigate(['/incidencias', this.incidencia.id, 'editar']);
+  getEstadoClass(estado: string): string {
+    switch (estado) {
+      case 'PENDIENTE': return 'badge bg-warning';
+      case 'EN_PROCESO': return 'badge bg-info';
+      case 'RESUELTA': return 'badge bg-success';
+      case 'CERRADA': return 'badge bg-secondary';
+      default: return 'badge bg-secondary';
     }
   }
 
   volver(): void {
     this.router.navigate(['/incidencias']);
-  }
-
-  getEstadoColor(estado: string): string {
-    switch (estado?.toUpperCase()) {
-      case 'ABIERTA': return 'warn';
-      case 'EN_PROCESO': return 'primary';
-      case 'RESUELTA': return 'accent';
-      case 'CERRADA': return 'basic';
-      default: return 'basic';
-    }
-  }
-
-  getPrioridadColor(prioridad: string): string {
-    switch (prioridad?.toUpperCase()) {
-      case 'ALTA': return 'warn';
-      case 'MEDIA': return 'accent';
-      case 'BAJA': return 'primary';
-      default: return 'basic';
-    }
   }
 } 

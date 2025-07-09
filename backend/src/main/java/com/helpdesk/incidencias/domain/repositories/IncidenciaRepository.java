@@ -93,6 +93,16 @@ public interface IncidenciaRepository {
     List<Incidencia> findIncidenciasSinAsignar();
     
     /**
+     * Obtiene incidencias ordenadas por prioridad (Alta → Baja) y frecuencia de búsqueda
+     */
+    List<Incidencia> findAllByOrderByPrioridadDescFrecuenciaBusquedaDesc();
+    
+    /**
+     * Obtiene incidencias por prioridad ordenadas por frecuencia de búsqueda
+     */
+    List<Incidencia> findByPrioridadOrderByFrecuenciaBusquedaDesc(Prioridad prioridad);
+    
+    /**
      * Obtiene incidencias asignadas a un técnico específico
      */
     List<Incidencia> findIncidenciasAsignadasATecnico(Usuario tecnico);

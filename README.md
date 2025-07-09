@@ -1,164 +1,167 @@
-# 🚀 Helpdesk Incidencias - Sistema Completo
+# 🎯 Helpdesk Incidencias
 
-## 📋 Descripción
+Sistema completo de gestión de incidencias corporativas con autenticación JWT, backend en Spring Boot y frontend en Angular.
 
-Sistema web corporativo para la gestión colaborativa de incidencias internas con análisis visual y seguimiento estructurado. Desarrollado con arquitectura moderna full-stack.
+**Desarrollado por:** Francisco Javier Sánchez López  
+**Fecha:** Junio 2025  
+**Tipo:** Proyecto personal para portafolio
 
-## 🏗️ Arquitectura
+## 🚀 Características
 
-### Backend (Spring Boot)
-- **Java 17** con Spring Boot 3.2.0
-- **Arquitectura Hexagonal** (Clean Architecture)
-- **Base de datos MySQL** con JPA/Hibernate
-- **Seguridad JWT** con Spring Security
-- **API REST** documentada con Swagger/OpenAPI
-- **Pruebas unitarias** con JUnit 5 y Mockito
+### ✅ Backend (Spring Boot + Java 21)
+- **Autenticación JWT** con login por ID de empleado o email
+- **Base de datos MySQL** con entidades optimizadas
+- **API REST completa** con controladores para auth e incidencias
+- **Seguridad configurada** con Spring Security
+- **Ordenamiento inteligente** por prioridad y frecuencia de búsqueda
+- **Datos de prueba** incluidos
 
-### Frontend (Angular 17)
-- **Angular 17** con TypeScript
-- **Angular Material** para UI moderna
-- **Bootstrap 5** para responsive design
-- **RxJS** para programación reactiva
-- **JWT Authentication** con interceptors
-- **Componentes modulares** y reutilizables
+### ✅ Frontend (Angular 17)
+- **Arquitectura modular** con servicios, guards, interceptors
+- **Autenticación completa** con JWT automático
+- **Interfaz moderna** usando Angular + Bootstrap + Angular Material
+- **Componentes principales:**
+  - Login con validación
+  - Dashboard con estadísticas
+  - Lista de incidencias con filtros
+  - Detalle de incidencia con pestañas
+- **Guards de protección** de rutas
+- **Interceptor HTTP** para manejo automático de tokens
 
-## 🚀 Inicio Rápido
+### 🔐 Seguridad
+- **Login seguro** por ID de empleado o email
+- **Tokens JWT** con expiración automática
+- **Protección de rutas** con AuthGuard
+- **Logout automático** al expirar token
+- **Roles de usuario** (ADMIN, TECNICO, SUPERVISOR, USUARIO)
 
-### Opción 1: Script Automático (Recomendado)
+### 📊 Gestión de Incidencias
+- **CRUD completo** de incidencias
+- **Filtros avanzados** por estado, prioridad, categoría
+- **Ordenamiento inteligente** por prioridad y frecuencia
+- **Paginación** y búsqueda
+- **Estadísticas** en dashboard
+- **Frecuencia de búsqueda** automática
+
+## 🛠️ Tecnologías Utilizadas
+
+### Backend
+- **Java 21**
+- **Spring Boot 3.x**
+- **Spring Security**
+- **Spring Data JPA**
+- **MySQL 8.0**
+- **JWT**
+- **Maven**
+
+### Frontend
+- **Angular 17**
+- **TypeScript**
+- **Bootstrap 5**
+- **Angular Material**
+- **RxJS**
+- **FontAwesome**
+
+## 📋 Prerrequisitos
+
+- **Java 21** o superior
+- **Node.js 18** o superior
+- **MySQL 8.0** o superior
+- **Maven 3.6** o superior
+
+## 🚀 Instalación
+
+### 1. Clonar el repositorio
 ```bash
-# Windows
-start-full-stack.bat
-
-# Linux/Mac
-./start-full-stack.sh
+git clone https://github.com/Javityan2/helpdesk-incidencias.git
+cd helpdesk-incidencias
 ```
 
-### Opción 2: Manual
+### 2. Configurar Base de Datos
+```sql
+CREATE DATABASE helpdesk_incidencias;
+```
 
-#### 1. Backend
+### 3. Configurar Backend
 ```bash
 cd backend
+# Editar application.properties con tus credenciales de BD
+mvn clean install
 mvn spring-boot:run
 ```
 
-#### 2. Frontend
+### 4. Configurar Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-### 3. Acceder a la Aplicación
-- **Frontend**: http://localhost:4200
-- **Backend API**: http://localhost:8080
-- **Documentación API**: http://localhost:8080/swagger-ui.html
+## 🔑 Usuarios de Prueba
 
-## 📊 Características Principales
+| Usuario | ID Empleado | Email | Contraseña | Rol |
+|---------|-------------|-------|------------|-----|
+| Juan Pérez | EMP001 | juan.perez@empresa.com | password | ADMIN |
+| María García | EMP002 | maria.garcia@empresa.com | password | TECNICO |
+| Carlos López | EMP003 | carlos.lopez@empresa.com | password | SUPERVISOR |
+| Ana Martínez | EMP004 | ana.martinez@empresa.com | password | USUARIO |
+| Luis Rodríguez | EMP005 | luis.rodriguez@empresa.com | password | USUARIO |
 
-### 🔐 Autenticación y Autorización
-- **Login seguro** con JWT
-- **Roles de usuario**: ADMIN, USER, TECHNICIAN
-- **Protección de rutas** con guards
-- **Interceptores** para manejo automático de tokens
+## 🌐 Acceso
 
-### 📋 Gestión de Incidencias
-- **CRUD completo** de incidencias
-- **Estados**: Abierta, En Proceso, Resuelta, Cerrada
-- **Prioridades**: Alta, Media, Baja
-- **Categorías**: Hardware, Software, Red, Otros
-- **Asignación** a técnicos
-- **Comentarios** y seguimiento
-
-### 📈 Dashboard y Analytics
-- **Estadísticas en tiempo real**
-- **Gráficos de distribución** por estado y prioridad
-- **Métricas de rendimiento**
-- **Filtros avanzados**
-
-### 🎨 Interfaz de Usuario
-- **Diseño responsivo** para móviles y tablets
-- **Tema Material Design** moderno
-- **Navegación intuitiva** con sidebar
-- **Notificaciones** con toastr
-- **Loading states** y feedback visual
-
-## 🛠️ Tecnologías Utilizadas
-
-### Backend Stack
-```
-Java 17
-├── Spring Boot 3.2.0
-├── Spring Security
-├── Spring Data JPA
-├── MySQL 8.0
-├── JWT (jjwt 0.12.3)
-├── Swagger/OpenAPI
-├── JUnit 5 + Mockito
-└── JaCoCo (Cobertura)
-```
-
-### Frontend Stack
-```
-Angular 17
-├── TypeScript
-├── Angular Material
-├── Bootstrap 5
-├── RxJS
-├── ngx-toastr
-├── jwt-decode
-└── Chart.js
-```
+- **Frontend:** http://localhost:4200
+- **Backend API:** http://localhost:8080/api
+- **Base de Datos:** localhost:3306/helpdesk_incidencias
 
 ## 📁 Estructura del Proyecto
 
 ```
 helpdesk-incidencias/
-├── backend/                    # API REST (Spring Boot)
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/helpdesk/incidencias/
-│   │   │   │   ├── domain/           # Entidades y repositorios
-│   │   │   │   ├── application/      # Servicios y DTOs
-│   │   │   │   └── infrastructure/   # Controladores y config
-│   │   │   └── resources/
-│   │   └── test/                     # Pruebas unitarias
-│   ├── pom.xml
-│   └── TESTING.md
-├── frontend/                   # Aplicación Angular
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/           # Componentes UI
-│   │   │   ├── services/             # Servicios HTTP
-│   │   │   ├── guards/               # Guards de autenticación
-│   │   │   └── interceptors/         # Interceptores HTTP
-│   │   ├── environments/             # Configuraciones
-│   │   └── assets/                   # Recursos estáticos
-│   ├── package.json
-│   └── README.md
-├── docs/                       # Documentación
-├── scripts/                    # Scripts de automatización
-└── README.md                   # Este archivo
+├── backend/                 # Spring Boot Backend
+│   ├── src/main/java/
+│   │   ├── com/helpdesk/incidencias/
+│   │   │   ├── domain/      # Entidades y lógica de negocio
+│   │   │   ├── infrastructure/ # Repositorios y configuración
+│   │   │   └── application/ # Servicios y controladores
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── data.sql     # Datos de prueba
+│   └── pom.xml
+├── frontend/                # Angular Frontend
+│   ├── src/app/
+│   │   ├── components/      # Componentes Angular
+│   │   ├── services/        # Servicios HTTP
+│   │   ├── guards/          # Guards de autenticación
+│   │   ├── interceptors/    # Interceptores HTTP
+│   │   └── models/          # Interfaces TypeScript
+│   ├── src/environments/    # Configuración de entornos
+│   └── package.json
+└── README.md
 ```
 
 ## 🔧 Configuración
 
-### Base de Datos
-```sql
--- Crear base de datos
-CREATE DATABASE helpdesk_incidencias;
+### Backend (application.properties)
+```properties
+# Base de Datos
+spring.datasource.url=jdbc:mysql://localhost:3306/helpdesk_incidencias
+spring.datasource.username=tu_usuario
+spring.datasource.password=tu_password
+
+# JWT
+jwt.secret=tu_secret_key_muy_segura
+jwt.expiration=86400000
+
+# Server
+server.port=8080
 ```
 
-### Variables de Entorno
-```properties
-# Backend (application.properties)
-spring.datasource.url=jdbc:mysql://localhost:3306/helpdesk_incidencias
-spring.datasource.username=root
-spring.datasource.password=password
-jwt.secret=your-secret-key
-jwt.expiration=3600000
-
-# Frontend (environment.ts)
-apiUrl: 'http://localhost:8080/api'
+### Frontend (environment.ts)
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'
+};
 ```
 
 ## 🧪 Pruebas
@@ -166,65 +169,32 @@ apiUrl: 'http://localhost:8080/api'
 ### Backend
 ```bash
 cd backend
-mvn test                    # Ejecutar todas las pruebas
-mvn jacoco:report          # Generar reporte de cobertura
+mvn test
 ```
 
 ### Frontend
 ```bash
 cd frontend
-npm test                    # Ejecutar pruebas unitarias
-npm run test:coverage      # Con cobertura
+npm test
 ```
 
-## 📊 Métricas de Calidad
+## 📦 Despliegue
 
-### Backend
-- **Cobertura de código**: > 80%
-- **Pruebas unitarias**: 100% de servicios críticos
-- **Pruebas de integración**: Controladores principales
-- **Documentación API**: Swagger completo
-
-### Frontend
-- **Cobertura de código**: > 70%
-- **Componentes testeados**: Principales
-- **Performance**: Lighthouse > 90
-- **Accesibilidad**: WCAG 2.1 AA
-
-## 🚀 Despliegue
-
-### Backend (Producción)
+### Backend (JAR)
 ```bash
 cd backend
 mvn clean package
 java -jar target/helpdesk-incidencias-1.0.0.jar
 ```
 
-### Frontend (Producción)
+### Frontend (Build)
 ```bash
 cd frontend
-npm run build:prod
-# Servir archivos de dist/helpdesk-incidencias/
+npm run build
+# Los archivos se generan en dist/
 ```
 
-## 🔐 Seguridad
-
-### Implementada
-- ✅ **JWT Authentication**
-- ✅ **CORS Configuration**
-- ✅ **Password Encryption** (BCrypt)
-- ✅ **Role-based Access Control**
-- ✅ **Input Validation**
-- ✅ **SQL Injection Protection**
-
-### Recomendaciones para Producción
-- 🔒 **HTTPS** obligatorio
-- 🔒 **Rate Limiting**
-- 🔒 **Audit Logging**
-- 🔒 **Environment Variables**
-- 🔒 **Database Backup**
-
-## 📈 Roadmap
+## 🗺️ Roadmap
 
 ### Versión 1.1 (Próxima)
 - [ ] **Notificaciones push** en tiempo real
@@ -240,50 +210,68 @@ npm run build:prod
 - [ ] **SLA y métricas de tiempo**
 - [ ] **Integración con sistemas externos**
 
+### Versión 2.0
+- [ ] **Microservicios** con Spring Cloud
+- [ ] **Docker y Kubernetes**
+- [ ] **CI/CD Pipeline**
+- [ ] **Monitoreo con Prometheus/Grafana**
+- [ ] **Tests automatizados**
+
+## 🚀 Características Futuras
+
+### Funcionalidades Avanzadas
+- **Chat en tiempo real** entre técnicos y usuarios
+- **Sistema de tickets** con priorización automática
+- **Módulo de inventario** de equipos y software
+- **Sistema de backup** automático
+- **Integración con calendario** para programar mantenimientos
+
+### Mejoras de UX/UI
+- **Tema oscuro/claro** personalizable
+- **Responsive design** mejorado para móviles
+- **Accesibilidad** WCAG 2.1 AA
+- **Animaciones** y transiciones suaves
+- **PWA** (Progressive Web App)
+
+### Análisis y Reportes
+- **Dashboard ejecutivo** con KPIs
+- **Análisis predictivo** de incidencias
+- **Reportes personalizados** por departamento
+- **Métricas de rendimiento** de técnicos
+- **Análisis de tendencias** temporales
+
 ## 🤝 Contribución
 
-### Guías de Desarrollo
-1. **Fork** el repositorio
-2. **Crear** rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. **Commit** cambios (`git commit -am 'feat: nueva funcionalidad'`)
-4. **Push** a la rama (`git push origin feature/nueva-funcionalidad`)
-5. **Crear** Pull Request
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
-### Estándares de Código
-- **Backend**: Java Code Style Guide
-- **Frontend**: Angular Style Guide
-- **Commits**: Conventional Commits
-- **Documentación**: Javadoc + JSDoc
+## 📝 Licencia
 
-## 📞 Soporte
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
 
-### Contacto
-- **Email**: soporte@helpdesk-incidencias.com
-- **Documentación**: [Wiki del proyecto]
-- **Issues**: [GitHub Issues]
+## 👥 Autor
 
-### Comunidad
-- **Discord**: [Canal de desarrollo]
-- **Stack Overflow**: [Tag: helpdesk-incidencias]
-- **Blog**: [Artículos técnicos]
+- **Francisco Javier Sánchez López** - *Desarrollo completo* - [Javityan2](https://github.com/Javityan2)
+- **Email:** franciscoj.sanchezl@potoros.itson.edu.mx
+- **LinkedIn:** [Francisco Javier Sánchez López](https://www.linkedin.com/in/francisco-javier-sanchez-lopez-881a02357/)
 
----
+## 💡 Motivación del Proyecto
 
-## 📄 Licencia
+He desarrollado este sistema de gestión de incidencias con el propósito de aprender todas las tecnologías que estoy utilizando en él. Quiero ser un desarrollador completo y que mis empleadores sepan que soy capaz de aprender cualquier cosa para dar solución a cualquier problema que los clientes enfrenten.
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
+Aunque conocía previamente Spring Boot y Angular, es la primera vez que las utilizo para crear algo completo y funcional. Este proyecto representa mi compromiso con el aprendizaje continuo y la excelencia técnica.
 
 ## 🙏 Agradecimientos
 
-- **Spring Team** por el excelente framework
-- **Angular Team** por la plataforma web moderna
-- **Material Design** por las guías de diseño
-- **Comunidad open source** por las librerías utilizadas
+- **Miguel Moroyoqui** - Mi profesor de la universidad (ITSON) por ser una fuente de inspiración en el aprendizaje constante de este bello mundo del desarrollo de software
+- Spring Boot Team
+- Angular Team
+- Bootstrap Team
+- Comunidad de desarrolladores
 
 ---
 
-**Estado del Proyecto**: 🟢 Activo y en desarrollo
-
-**Última Actualización**: Diciembre 2024
-
-**Versión**: 1.0.0
+**¡Disfruta usando el sistema de gestión de incidencias!** 🎉

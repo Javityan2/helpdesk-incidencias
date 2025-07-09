@@ -7,7 +7,7 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
@@ -20,9 +20,11 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    // Obtener token del servicio de autenticación
     const token = this.authService.getToken();
     
-    if (token && this.authService.isTokenValid()) {
+    // Si hay token, agregarlo al header
+    if (token) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
@@ -32,11 +34,17 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((error: HttpErrorResponse) => {
+        // Si el error es 401 (Unauthorized), redirigir al login
         if (error.status === 401) {
-          // Token expirado o inválido
           this.authService.logout();
           this.router.navigate(['/login']);
         }
+        
+        // Si el error es 403 (Forbidden), mostrar mensaje de acceso denegado
+        if (error.status === 403) {
+          console.error('Acceso denegado: No tienes permisos para realizar esta acción');
+        }
+        
         return throwError(() => error);
       })
     );

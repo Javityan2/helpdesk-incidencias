@@ -1,51 +1,83 @@
-<div class="login-container">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="logo">
-        <mat-icon class="logo-icon">support_agent</mat-icon>
-        <h1>Helpdesk Incidencias</h1>
+<div class="container-fluid">
+  <div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+          <h4 class="mb-0">
+            <i class="fas fa-user-lock me-2"></i>
+            Iniciar Sesión
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            
+            <!-- Campo Identificador -->
+            <div class="mb-3">
+              <label for="identificador" class="form-label">
+                <i class="fas fa-id-card me-2"></i>ID de Empleado o Email
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="identificador"
+                name="identificador"
+                [(ngModel)]="loginData.identificador"
+                placeholder="Ingresa tu ID de empleado o email"
+                required
+                (keypress)="onKeyPress($event)">
+            </div>
+
+            <!-- Campo Contraseña -->
+            <div class="mb-3">
+              <label for="password" class="form-label">
+                <i class="fas fa-lock me-2"></i>Contraseña
+              </label>
+              <div class="input-group">
+                <input 
+                  [type]="showPassword ? 'text' : 'password'" 
+                  class="form-control" 
+                  id="password"
+                  name="password"
+                  [(ngModel)]="loginData.password"
+                  placeholder="Ingresa tu contraseña"
+                  required
+                  (keypress)="onKeyPress($event)">
+                <button 
+                  type="button" 
+                  class="btn btn-outline-secondary"
+                  (click)="togglePasswordVisibility()">
+                  <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mensaje de Error -->
+            <div class="alert alert-danger" *ngIf="error">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              {{ error }}
+            </div>
+
+            <!-- Botón de Login -->
+            <div class="d-grid">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-lg"
+                [disabled]="loading || !loginForm.valid">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="fas fa-sign-in-alt me-2" *ngIf="!loading"></i>
+                {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+        <div class="card-footer text-center text-muted">
+          <small>
+            <i class="fas fa-info-circle me-1"></i>
+            Sistema de Gestión de Incidencias
+          </small>
+        </div>
       </div>
-      <p class="subtitle">Sistema de Gestión de Incidencias Corporativas</p>
-    </div>
-
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email o ID de Empleado</mat-label>
-        <input matInput formControlName="identificador" placeholder="Ingrese su email o ID de empleado">
-        <mat-icon matSuffix>person</mat-icon>
-        <mat-error *ngIf="loginForm.get('identificador')?.hasError('required')">
-          El identificador es requerido
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('identificador')?.hasError('minlength')">
-          El identificador debe tener al menos 3 caracteres
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Contraseña</mat-label>
-        <input matInput [type]="hidePassword ? 'password' : 'text'" 
-               formControlName="password" placeholder="Ingrese su contraseña">
-        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" 
-                [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-          <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-        </button>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-          La contraseña es requerida
-        </mat-error>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
-          La contraseña debe tener al menos 6 caracteres
-        </mat-error>
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit" 
-              class="login-button full-width" [disabled]="loading">
-        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-        <span *ngIf="!loading">Iniciar Sesión</span>
-      </button>
-    </form>
-
-    <div class="login-footer">
-      <p>¿Problemas para acceder? Contacte al administrador del sistema</p>
     </div>
   </div>
 </div> 

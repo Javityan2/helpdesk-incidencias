@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IncidenciasService, IncidenciaStats } from '../../services/incidencias.service';
-import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,67 +7,44 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  stats: IncidenciaStats | null = null;
-  loading = true;
-  currentUser: any = null;
+  
+  loading = false;
+  estadisticas = {
+    totalIncidencias: 0,
+    pendientes: 0,
+    enProceso: 0,
+    resueltas: 0
+  };
 
-  constructor(
-    private incidenciasService: IncidenciasService,
-    private authService: AuthService
-  ) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.currentUser = this.authService.getCurrentUser();
-    this.loadStats();
+    this.cargarEstadisticas();
   }
 
-  loadStats(): void {
+  cargarEstadisticas(): void {
     this.loading = true;
-    this.incidenciasService.getIncidenciasStats().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.stats = response.data;
-        }
-      },
-      error: (error) => {
-        console.error('Error cargando estadísticas:', error);
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
+    // TODO: Implementar carga de estadísticas desde el servicio
+    setTimeout(() => {
+      this.estadisticas = {
+        totalIncidencias: 25,
+        pendientes: 8,
+        enProceso: 12,
+        resueltas: 5
+      };
+      this.loading = false;
+    }, 1000);
   }
 
-  getProgressPercentage(current: number, total: number): number {
-    if (total === 0) return 0;
-    return Math.round((current / total) * 100);
+  nuevaIncidencia(): void {
+    this.router.navigate(['/incidencias/nueva']);
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'abiertas':
-        return '#ff9800';
-      case 'enProceso':
-        return '#2196f3';
-      case 'resueltas':
-        return '#4caf50';
-      case 'cerradas':
-        return '#9e9e9e';
-      default:
-        return '#666';
-    }
+  verIncidencias(): void {
+    this.router.navigate(['/incidencias']);
   }
 
-  getPriorityColor(priority: string): string {
-    switch (priority) {
-      case 'alta':
-        return '#f44336';
-      case 'media':
-        return '#ff9800';
-      case 'baja':
-        return '#4caf50';
-      default:
-        return '#666';
-    }
+  verIncidenciasPendientes(): void {
+    this.router.navigate(['/incidencias'], { queryParams: { estado: 'PENDIENTE' } });
   }
 } 

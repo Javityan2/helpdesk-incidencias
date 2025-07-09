@@ -70,6 +70,9 @@ public class Incidencia {
     @Column(name = "comentarios_internos", columnDefinition = "TEXT")
     private String comentariosInternos;
     
+    @Column(name = "frecuencia_busqueda", nullable = false)
+    private Integer frecuenciaBusqueda = 0;
+    
     @OneToMany(mappedBy = "incidencia", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comentario> comentarios = new ArrayList<>();
     
@@ -219,6 +222,14 @@ public class Incidencia {
     
     public void setComentariosInternos(String comentariosInternos) {
         this.comentariosInternos = comentariosInternos;
+    }
+    
+    public Integer getFrecuenciaBusqueda() {
+        return frecuenciaBusqueda;
+    }
+    
+    public void setFrecuenciaBusqueda(Integer frecuenciaBusqueda) {
+        this.frecuenciaBusqueda = frecuenciaBusqueda;
     }
     
     public List<Comentario> getComentarios() {

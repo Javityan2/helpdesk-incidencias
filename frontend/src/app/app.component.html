@@ -1,9 +1,1 @@
-<!-- Mostrar layout principal si está autenticado -->
-<div *ngIf="isAuthenticated">
-  <app-layout></app-layout>
-</div>
-
-<!-- Mostrar solo el router outlet para login si no está autenticado -->
-<div *ngIf="!isAuthenticated">
-  <router-outlet></router-outlet>
-</div> 
+<router-outlet></router-outlet> 

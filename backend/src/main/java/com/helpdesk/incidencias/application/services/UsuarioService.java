@@ -106,19 +106,18 @@ public class UsuarioService {
     }
     
     /**
-     * Autentica un usuario por empleadoId y contraseña
+     * Autenticar usuario por ID de empleado
      */
     public Optional<Usuario> autenticarPorEmpleadoId(String empleadoId, String password) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmpleadoId(empleadoId);
+        
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            if (passwordEncoder.matches(password, usuario.getPassword()) && usuario.getActivo()) {
-                // Actualizar último acceso
-                usuario.setUltimoAcceso(LocalDateTime.now());
-                usuarioRepository.save(usuario);
+            if (passwordEncoder.matches(password, usuario.getPassword())) {
                 return Optional.of(usuario);
             }
         }
+        
         return Optional.empty();
     }
     

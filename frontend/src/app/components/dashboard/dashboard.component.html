@@ -1,143 +1,124 @@
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p>Bienvenido, {{ currentUser?.nombre }} {{ currentUser?.apellido }}</p>
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>
+        <i class="fas fa-tachometer-alt me-2"></i>
+        Dashboard
+      </h2>
+    </div>
   </div>
 
-  <div *ngIf="loading" class="loading-section">
-    <app-loading message="Cargando estadísticas..."></app-loading>
+  <!-- Loading -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando estadísticas...</p>
+    </div>
   </div>
 
-  <div *ngIf="!loading && stats" class="dashboard-content">
-    <!-- Tarjetas de estadísticas -->
-    <div class="stats-grid">
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-header">
-            <mat-icon class="stat-icon">bug_report</mat-icon>
-            <h3>Total Incidencias</h3>
+  <!-- Estadísticas -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="mb-0">{{ estadisticas.totalIncidencias }}</h3>
+              <p class="text-muted mb-0">Total Incidencias</p>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-bug fa-2x text-primary"></i>
+            </div>
           </div>
-          <div class="stat-value">{{ stats.total }}</div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-header">
-            <mat-icon class="stat-icon" style="color: #ff9800;">pending</mat-icon>
-            <h3>Abiertas</h3>
-          </div>
-          <div class="stat-value">{{ stats.abiertas }}</div>
-          <div class="stat-percentage">
-            {{ getProgressPercentage(stats.abiertas, stats.total) }}%
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-header">
-            <mat-icon class="stat-icon" style="color: #2196f3;">engineering</mat-icon>
-            <h3>En Proceso</h3>
-          </div>
-          <div class="stat-value">{{ stats.enProceso }}</div>
-          <div class="stat-percentage">
-            {{ getProgressPercentage(stats.enProceso, stats.total) }}%
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div class="stat-header">
-            <mat-icon class="stat-icon" style="color: #4caf50;">check_circle</mat-icon>
-            <h3>Resueltas</h3>
-          </div>
-          <div class="stat-value">{{ stats.resueltas }}</div>
-          <div class="stat-percentage">
-            {{ getProgressPercentage(stats.resueltas, stats.total) }}%
-          </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </div>
 
-    <!-- Gráficos de prioridad -->
-    <div class="charts-section">
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Distribución por Prioridad</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="priority-chart">
-            <div class="priority-item">
-              <div class="priority-label">
-                <span class="priority-dot" style="background-color: #f44336;"></span>
-                Alta
-              </div>
-              <div class="priority-bar">
-                <div class="priority-fill" 
-                     [style.width.%]="getProgressPercentage(stats.alta, stats.total)"
-                     style="background-color: #f44336;">
-                </div>
-              </div>
-              <div class="priority-count">{{ stats.alta }}</div>
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="mb-0">{{ estadisticas.pendientes }}</h3>
+              <p class="text-muted mb-0">Pendientes</p>
             </div>
-
-            <div class="priority-item">
-              <div class="priority-label">
-                <span class="priority-dot" style="background-color: #ff9800;"></span>
-                Media
-              </div>
-              <div class="priority-bar">
-                <div class="priority-fill" 
-                     [style.width.%]="getProgressPercentage(stats.media, stats.total)"
-                     style="background-color: #ff9800;">
-                </div>
-              </div>
-              <div class="priority-count">{{ stats.media }}</div>
-            </div>
-
-            <div class="priority-item">
-              <div class="priority-label">
-                <span class="priority-dot" style="background-color: #4caf50;"></span>
-                Baja
-              </div>
-              <div class="priority-bar">
-                <div class="priority-fill" 
-                     [style.width.%]="getProgressPercentage(stats.baja, stats.total)"
-                     style="background-color: #4caf50;">
-                </div>
-              </div>
-              <div class="priority-count">{{ stats.baja }}</div>
+            <div class="stat-icon">
+              <i class="fas fa-clock fa-2x text-warning"></i>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </div>
 
-    <!-- Acciones rápidas -->
-    <div class="quick-actions">
-      <mat-card class="actions-card">
-        <mat-card-header>
-          <mat-card-title>Acciones Rápidas</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="actions-grid">
-            <button mat-raised-button color="primary" routerLink="/incidencias/nueva">
-              <mat-icon>add</mat-icon>
-              Nueva Incidencia
-            </button>
-            <button mat-raised-button color="accent" routerLink="/incidencias">
-              <mat-icon>list</mat-icon>
-              Ver Todas
-            </button>
-            <button mat-raised-button color="warn" routerLink="/incidencias">
-              <mat-icon>priority_high</mat-icon>
-              Urgentes
-            </button>
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="mb-0">{{ estadisticas.enProceso }}</h3>
+              <p class="text-muted mb-0">En Proceso</p>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-cogs fa-2x text-info"></i>
+            </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="mb-0">{{ estadisticas.resueltas }}</h3>
+              <p class="text-muted mb-0">Resueltas</p>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-check-circle fa-2x text-success"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones Rápidas -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="fas fa-bolt me-2"></i>
+            Acciones Rápidas
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <button class="btn btn-primary btn-lg w-100" (click)="nuevaIncidencia()">
+                <i class="fas fa-plus me-2"></i>
+                Nueva Incidencia
+              </button>
+            </div>
+            <div class="col-md-4 mb-3">
+              <button class="btn btn-info btn-lg w-100" (click)="verIncidencias()">
+                <i class="fas fa-list me-2"></i>
+                Ver Todas
+              </button>
+            </div>
+            <div class="col-md-4 mb-3">
+              <button class="btn btn-warning btn-lg w-100" (click)="verIncidenciasPendientes()">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Pendientes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div> 

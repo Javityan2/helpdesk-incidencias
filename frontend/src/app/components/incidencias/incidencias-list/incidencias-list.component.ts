@@ -1,10 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { IncidenciasService, Incidencia } from '../../../services/incidencias.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { IncidenciaService, Incidencia } from '../../../services/incidencia.service';
 
 @Component({
   selector: 'app-incidencias-list',
@@ -12,162 +8,129 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./incidencias-list.component.scss']
 })
 export class IncidenciasListComponent implements OnInit {
-  displayedColumns: string[] = ['titulo', 'usuario', 'estado'];
-  dataSource: MatTableDataSource<Incidencia> = new MatTableDataSource<Incidencia>([]);
+  
+  incidencias: Incidencia[] = [];
   loading = false;
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  error = '';
+  
+  // Filtros
+  filtroEstado = '';
+  filtroPrioridad = '';
+  filtroCategoria = '';
+  
+  // Paginación
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalItems = 0;
 
   constructor(
-    private incidenciasService: IncidenciasService,
-    private router: Router,
-    private snackBar: MatSnackBar
+    private incidenciaService: IncidenciaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadIncidencias();
+    this.cargarIncidencias();
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  loadIncidencias(): void {
+  cargarIncidencias(): void {
     this.loading = true;
-    this.incidenciasService.getIncidencias().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.dataSource.data = response.data as Incidencia[];
-        } else {
-          this.snackBar.open(response.message || 'Error al cargar incidencias', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
-        }
-      },
-      error: (error) => {
-        console.error('Error cargando incidencias:', error);
-        this.snackBar.open('Error al cargar las incidencias', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      },
-      complete: () => {
-        this.loading = false;
-      }
-    });
-  }
+    this.error = '';
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  onRowClick(incidencia: Incidencia): void {
-    this.router.navigate(['/incidencias', incidencia.id]);
-  }
-
-  onEdit(incidencia: Incidencia): void {
-    this.router.navigate(['/incidencias', incidencia.id, 'editar']);
-  }
-
-  onDelete(incidencia: Incidencia): void {
-    if (confirm('¿Está seguro de que desea eliminar esta incidencia?')) {
-      this.incidenciasService.deleteIncidencia(incidencia.id!).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.snackBar.open('Incidencia eliminada correctamente', 'Cerrar', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
-            this.loadIncidencias();
-          } else {
-            this.snackBar.open(response.message || 'Error al eliminar incidencia', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
-          }
+    this.incidenciaService.getIncidencias()
+      .subscribe({
+        next: (data) => {
+          this.incidencias = data;
+          this.totalItems = data.length;
+          this.loading = false;
         },
         error: (error) => {
-          console.error('Error eliminando incidencia:', error);
-          this.snackBar.open('Error al eliminar la incidencia', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          console.error('Error al cargar incidencias:', error);
+          this.error = 'Error al cargar las incidencias. Inténtalo de nuevo.';
+          this.loading = false;
         }
       });
-    }
   }
 
-  getEstadoColor(estado: string): string {
-    switch (estado) {
-      case 'ABIERTA':
-        return '#ff9800';
-      case 'EN_PROCESO':
-        return '#2196f3';
-      case 'RESUELTA':
-        return '#4caf50';
-      case 'CERRADA':
-        return '#9e9e9e';
-      default:
-        return '#666';
-    }
-  }
-
-  getPrioridadColor(prioridad: string): string {
-    switch (prioridad) {
-      case 'ALTA':
-        return '#f44336';
-      case 'MEDIA':
-        return '#ff9800';
-      case 'BAJA':
-        return '#4caf50';
-      default:
-        return '#666';
-    }
-  }
-
-  getEstadoText(estado: string): string {
-    switch (estado) {
-      case 'ABIERTA':
-        return 'Abierta';
-      case 'EN_PROCESO':
-        return 'En Proceso';
-      case 'RESUELTA':
-        return 'Resuelta';
-      case 'CERRADA':
-        return 'Cerrada';
-      default:
-        return estado;
-    }
-  }
-
-  getPrioridadText(prioridad: string): string {
-    switch (prioridad) {
-      case 'ALTA':
-        return 'Alta';
-      case 'MEDIA':
-        return 'Media';
-      case 'BAJA':
-        return 'Baja';
-      default:
-        return prioridad;
-    }
-  }
-
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+  verDetalle(id: number): void {
+    // Incrementar frecuencia de búsqueda
+    this.incidenciaService.incrementarFrecuenciaBusqueda(id).subscribe({
+      next: () => {
+        console.log('Frecuencia de búsqueda incrementada');
+      },
+      error: (error) => {
+        console.error('Error al incrementar frecuencia:', error);
+      }
     });
+
+    // Navegar al detalle
+    this.router.navigate(['/incidencias', id]);
+  }
+
+  aplicarFiltros(): void {
+    this.currentPage = 1;
+    this.cargarIncidencias();
+  }
+
+  limpiarFiltros(): void {
+    this.filtroEstado = '';
+    this.filtroPrioridad = '';
+    this.filtroCategoria = '';
+    this.currentPage = 1;
+    this.cargarIncidencias();
+  }
+
+  getIncidenciasFiltradas(): Incidencia[] {
+    let filtradas = this.incidencias;
+
+    if (this.filtroEstado) {
+      filtradas = filtradas.filter(i => i.estado === this.filtroEstado);
+    }
+
+    if (this.filtroPrioridad) {
+      filtradas = filtradas.filter(i => i.prioridad === this.filtroPrioridad);
+    }
+
+    if (this.filtroCategoria) {
+      filtradas = filtradas.filter(i => i.categoria === this.filtroCategoria);
+    }
+
+    return filtradas;
+  }
+
+  getIncidenciasPaginadas(): Incidencia[] {
+    const filtradas = this.getIncidenciasFiltradas();
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return filtradas.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.getIncidenciasFiltradas().length / this.itemsPerPage);
+  }
+
+  cambiarPagina(pagina: number): void {
+    this.currentPage = pagina;
+  }
+
+  getPrioridadClass(prioridad: string): string {
+    switch (prioridad) {
+      case 'ALTA': return 'badge bg-danger';
+      case 'MEDIA': return 'badge bg-warning';
+      case 'BAJA': return 'badge bg-success';
+      default: return 'badge bg-secondary';
+    }
+  }
+
+  getEstadoClass(estado: string): string {
+    switch (estado) {
+      case 'PENDIENTE': return 'badge bg-warning';
+      case 'EN_PROCESO': return 'badge bg-info';
+      case 'RESUELTA': return 'badge bg-success';
+      case 'CERRADA': return 'badge bg-secondary';
+      default: return 'badge bg-secondary';
+    }
+  }
+
+  getCategoriasUnicas(): string[] {
+    return [...new Set(this.incidencias.map(i => i.categoria))];
   }
 } 

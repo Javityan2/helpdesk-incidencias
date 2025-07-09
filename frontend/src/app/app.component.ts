@@ -8,6 +8,7 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  
   isAuthenticated = false;
   currentUser: any = null;
 
@@ -17,19 +18,21 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a cambios de autenticación
-    this.authService.isAuthenticated$.subscribe(
-      isAuth => {
-        this.isAuthenticated = isAuth;
-        if (!isAuth) {
-          this.router.navigate(['/login']);
-        }
+    // Suscribirse a cambios en la autenticación
+    this.authService.currentUser.subscribe(
+      user => {
+        this.currentUser = user;
+        this.isAuthenticated = !!user;
       }
     );
 
-    // Suscribirse a cambios del usuario
-    this.authService.currentUser$.subscribe(
-      user => this.currentUser = user
-    );
+    // Verificar estado inicial
+    this.isAuthenticated = this.authService.isAuthenticated();
+    this.currentUser = this.authService.getCurrentUser();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 } 

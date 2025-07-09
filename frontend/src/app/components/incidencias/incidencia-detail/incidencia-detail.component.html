@@ -1,104 +1,258 @@
-<div class="incidencia-detail-container">
-  <div class="detail-header">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>bug_report</mat-icon>
-          Detalle de Incidencia #{{ incidencia?.id }}
-        </mat-card-title>
-        <mat-card-subtitle>
-          {{ incidencia?.fechaCreacion | date:'medium' }}
-        </mat-card-subtitle>
-      </mat-card-header>
-      
-      <mat-card-content>
-        <div class="incidencia-info">
-          <div class="info-row">
-            <div class="info-label">Título:</div>
-            <div class="info-value">{{ incidencia?.titulo }}</div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-label">Descripción:</div>
-            <div class="info-value">{{ incidencia?.descripcion }}</div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-label">Estado:</div>
-            <div class="info-value">
-              <mat-chip [color]="getEstadoColor(incidencia?.estado || '')" selected>
-                {{ incidencia?.estado }}
-              </mat-chip>
-            </div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-label">Prioridad:</div>
-            <div class="info-value">
-              <mat-chip [color]="getPrioridadColor(incidencia?.prioridad || '')" selected>
-                {{ incidencia?.prioridad }}
-              </mat-chip>
-            </div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-label">Categoría:</div>
-            <div class="info-value">{{ incidencia?.categoria }}</div>
-          </div>
-          
-          <div class="info-row">
-            <div class="info-label">Reportado por:</div>
-            <div class="info-value">{{ incidencia?.usuario?.nombre }}</div>
-          </div>
-          
-          <div class="info-row" *ngIf="incidencia?.tecnico">
-            <div class="info-label">Asignado a:</div>
-            <div class="info-value">{{ incidencia?.tecnico?.nombre }}</div>
-          </div>
+<div class="container-fluid" *ngIf="incidencia">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <button class="btn btn-outline-secondary me-3" (click)="volver()">
+            <i class="fas fa-arrow-left me-2"></i>
+            Volver
+          </button>
+          <h2 class="mb-0">
+            <i class="fas fa-ticket-alt me-2"></i>
+            Incidencia #{{ incidencia.id }}
+          </h2>
         </div>
-      </mat-card-content>
-      
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="editarIncidencia()">
-          <mat-icon>edit</mat-icon>
-          Editar
-        </button>
-        <button mat-raised-button color="accent" (click)="volver()">
-          <mat-icon>arrow_back</mat-icon>
-          Volver
-        </button>
-      </mat-card-actions>
-    </mat-card>
+        <div class="d-flex gap-2">
+          <span [class]="getPrioridadClass(incidencia.prioridad)">
+            {{ incidencia.prioridad }}
+          </span>
+          <span [class]="getEstadoClass(incidencia.estado)">
+            {{ incidencia.estado }}
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
-  
-  <!-- Comentarios -->
-  <div class="comentarios-section">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>comment</mat-icon>
-          Comentarios
-        </mat-card-title>
-      </mat-card-header>
-      
-      <mat-card-content>
-        <div class="comentarios-list" *ngIf="comentarios?.length">
-          <div class="comentario-item" *ngFor="let comentario of comentarios">
-            <div class="comentario-header">
-              <span class="autor">{{ comentario.usuario?.nombre }}</span>
-              <span class="fecha">{{ comentario.fechaCreacion | date:'short' }}</span>
-            </div>
-            <div class="comentario-contenido">
-              {{ comentario.contenido }}
+
+  <!-- Loading -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando incidencia...</p>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="row" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="row" *ngIf="!loading && !error">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'general'"
+                 (click)="cambiarTab('general')">
+                <i class="fas fa-info-circle me-2"></i>
+                General
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'diagrama'"
+                 (click)="cambiarTab('diagrama')">
+                <i class="fas fa-project-diagram me-2"></i>
+                Diagrama de Flujo
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'ishikawa'"
+                 (click)="cambiarTab('ishikawa')">
+                <i class="fas fa-fish me-2"></i>
+                Ishikawa
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'ideas'"
+                 (click)="cambiarTab('ideas')">
+                <i class="fas fa-lightbulb me-2"></i>
+                Lluvia de Ideas
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'porques'"
+                 (click)="cambiarTab('porques')">
+                <i class="fas fa-question-circle me-2"></i>
+                5 Porqués
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" 
+                 [class.active]="activeTab === 'pareto'"
+                 (click)="cambiarTab('pareto')">
+                <i class="fas fa-chart-bar me-2"></i>
+                Análisis de Pareto
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body">
+          
+          <!-- Pestaña General -->
+          <div *ngIf="activeTab === 'general'">
+            <div class="row">
+              <div class="col-md-8">
+                <h4>{{ incidencia.titulo }}</h4>
+                <p class="text-muted">{{ incidencia.descripcion }}</p>
+                
+                <div class="row mt-4">
+                  <div class="col-md-6">
+                    <h6>Información de la Incidencia</h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <td><strong>ID:</strong></td>
+                        <td>#{{ incidencia.id }}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Estado:</strong></td>
+                        <td>
+                          <span [class]="getEstadoClass(incidencia.estado)">
+                            {{ incidencia.estado }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong>Prioridad:</strong></td>
+                        <td>
+                          <span [class]="getPrioridadClass(incidencia.prioridad)">
+                            {{ incidencia.prioridad }}
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><strong>Categoría:</strong></td>
+                        <td>{{ incidencia.categoria }}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Fecha de Creación:</strong></td>
+                        <td>{{ incidencia.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Frecuencia de Búsqueda:</strong></td>
+                        <td>{{ incidencia.frecuenciaBusqueda }}</td>
+                      </tr>
+                    </table>
+                  </div>
+                  
+                  <div class="col-md-6">
+                    <h6>Información del Usuario</h6>
+                    <div *ngIf="incidencia.usuario" class="card">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          {{ incidencia.usuario.nombre }} {{ incidencia.usuario.apellido }}
+                        </h6>
+                        <p class="card-text">
+                          <strong>Email:</strong> {{ incidencia.usuario.email }}<br>
+                          <strong>Departamento:</strong> {{ incidencia.usuario.departamento }}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <h6 class="mt-3">Información del Asignado</h6>
+                    <div *ngIf="incidencia.asignado" class="card">
+                      <div class="card-body">
+                        <h6 class="card-title">
+                          {{ incidencia.asignado.nombre }} {{ incidencia.asignado.apellido }}
+                        </h6>
+                        <p class="card-text">
+                          <strong>Email:</strong> {{ incidencia.asignado.email }}<br>
+                          <strong>Rol:</strong> {{ incidencia.asignado.rol }}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div *ngIf="!incidencia.asignado" class="alert alert-warning">
+                      <i class="fas fa-exclamation-triangle me-2"></i>
+                      No hay técnico asignado a esta incidencia.
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- Pestaña Diagrama de Flujo -->
+          <div *ngIf="activeTab === 'diagrama'">
+            <div class="text-center py-5">
+              <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+              <h5>Diagrama de Flujo</h5>
+              <p class="text-muted">Funcionalidad en desarrollo</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Crear Diagrama
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña Ishikawa -->
+          <div *ngIf="activeTab === 'ishikawa'">
+            <div class="text-center py-5">
+              <i class="fas fa-fish fa-3x text-muted mb-3"></i>
+              <h5>Diagrama de Ishikawa</h5>
+              <p class="text-muted">Funcionalidad en desarrollo</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Crear Diagrama
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña Lluvia de Ideas -->
+          <div *ngIf="activeTab === 'ideas'">
+            <div class="text-center py-5">
+              <i class="fas fa-lightbulb fa-3x text-muted mb-3"></i>
+              <h5>Lluvia de Ideas</h5>
+              <p class="text-muted">Funcionalidad en desarrollo</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Agregar Idea
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña 5 Porqués -->
+          <div *ngIf="activeTab === 'porques'">
+            <div class="text-center py-5">
+              <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+              <h5>Análisis de 5 Porqués</h5>
+              <p class="text-muted">Funcionalidad en desarrollo</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Agregar Pregunta
+              </button>
+            </div>
+          </div>
+
+          <!-- Pestaña Análisis de Pareto -->
+          <div *ngIf="activeTab === 'pareto'">
+            <div class="text-center py-5">
+              <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+              <h5>Análisis de Pareto</h5>
+              <p class="text-muted">Funcionalidad en desarrollo</p>
+              <button class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Agregar Causa
+              </button>
+            </div>
+          </div>
+
         </div>
-        
-        <div class="no-comentarios" *ngIf="!comentarios?.length">
-          <mat-icon>comment_outline</mat-icon>
-          <p>No hay comentarios aún</p>
-        </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </div> 
