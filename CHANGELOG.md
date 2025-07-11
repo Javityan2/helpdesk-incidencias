@@ -1,5 +1,11 @@
 # 📦 CHANGELOG
 
+## [1.1.0] - 2025-06-XX
+### Mejoras visuales y UX
+- Rediseño completo de login, carga, lista y formulario de incidencias.
+- Estilo moderno, profesional y responsivo en todos los componentes principales.
+- Mejoras de accesibilidad, animaciones y experiencia de usuario.
+
 ## [1.0.0] - 2025-07-08
 
 ### 🚀 Características principales

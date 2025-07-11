@@ -29,13 +29,8 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
 }
 
-@mixin button-hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
 // Contenedor principal
-.login-container {
+.auth-loading-container {
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -45,7 +40,7 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
 }
 
 // Fondo animado
-.login-background {
+.auth-loading-background {
   position: absolute;
   top: 0;
   left: 0;
@@ -108,15 +103,15 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
   }
 }
 
-// Contenido del login
-.login-content {
+// Contenido del loading
+.auth-loading-content {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
 }
 
-.login-card {
+.auth-loading-card {
   @include glass-effect;
   border-radius: 24px;
   padding: 40px;
@@ -135,8 +130,8 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
   }
 }
 
-// Header del login
-.login-header {
+// Header del loading
+.auth-loading-header {
   text-align: center;
   margin-bottom: 40px;
 }
@@ -191,197 +186,228 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
   }
 }
 
-// Formulario
-.login-form {
-  margin-bottom: 30px;
-}
-
-.form-field-container {
-  margin-bottom: 24px;
-}
-
-.input-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  z-index: 2;
-  color: $text-secondary;
-  transition: color 0.3s ease;
-  
-  i {
-    font-size: 18px;
-  }
-}
-
-.input-wrapper {
-  position: relative;
-  flex: 1;
-}
-
-.form-input {
-  width: 100%;
-  padding: 16px 16px 16px 50px;
-  border: 2px solid rgba(127, 140, 141, 0.2);
-  border-radius: 12px;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
-  outline: none;
-  
-  &:focus {
-    border-color: $primary-color;
-    background: $white;
-    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-    
-    & + .floating-label {
-      transform: translateY(-24px) scale(0.85);
-      color: $primary-color;
-    }
-  }
-  
-  &:not(:placeholder-shown) + .floating-label {
-    transform: translateY(-24px) scale(0.85);
-    color: $primary-color;
-  }
-  
-  &.focused + .floating-label {
-    transform: translateY(-24px) scale(0.85);
-    color: $primary-color;
-  }
-}
-
-.floating-label {
-  position: absolute;
-  left: 50px;
-  top: 16px;
-  font-size: 16px;
-  color: $text-secondary;
-  transition: all 0.3s ease;
-  pointer-events: none;
-  background: transparent;
-  padding: 0 4px;
-}
-
-.password-toggle {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: $text-secondary;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    color: $primary-color;
-    background: rgba(102, 126, 234, 0.1);
-  }
-  
-  &.active {
-    color: $primary-color;
-  }
-  
-  i {
-    font-size: 16px;
-  }
-}
-
-// Mensaje de error
-.error-message {
-  margin-bottom: 20px;
-  padding: 12px 16px;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  border-radius: 12px;
-  animation: shake 0.5s ease-in-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-.error-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: $error-color;
-  font-size: 14px;
-  
-  i {
-    font-size: 16px;
-  }
-}
-
-// Botón de submit
-.submit-container {
-  margin-top: 32px;
-}
-
-.login-button {
-  width: 100%;
-  height: 56px;
-  border: none;
-  border-radius: 16px;
-  @include gradient-bg;
-  color: $white;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  
-  &:hover:not(:disabled) {
-    @include button-hover;
-  }
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-  
-  &.loading {
-    pointer-events: none;
-  }
-}
-
-.button-content {
+// Spinner personalizado
+.spinner-container {
   @include flex-center;
-  gap: 12px;
-  position: relative;
-  z-index: 2;
+  margin: 40px 0;
 }
 
-.spinner {
-  @include flex-center;
+.custom-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top: 3px solid $primary-color;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
   
-  .spinner-circle {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid $white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+    border-top-color: $secondary-color;
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    left: 20px;
+    border-top-color: $accent-color;
+    animation-delay: 0.4s;
   }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Mensaje de carga
+.loading-message-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.loading-message {
+  @include flex-center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 500;
+  color: $text-primary;
+  
+  i {
+    color: $primary-color;
+    font-size: 20px;
+  }
+}
+
+.loading-dots {
+  @include flex-center;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $primary-color;
+  animation: dotPulse 1.4s ease-in-out infinite both;
+  
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Progreso de autenticación
+.auth-progress {
+  margin-bottom: 30px;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  animation: slideInUp 0.6s ease-out;
+  
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  
+  &:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  
+  &.completed {
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    
+    .progress-icon {
+      background: $success-color;
+      color: $white;
+    }
+    
+    .progress-text {
+      .step-title {
+        color: $success-color;
+      }
+    }
+    
+    .progress-status {
+      color: $success-color;
+      animation: checkmark 0.5s ease-out;
+    }
+  }
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(5px);
+  }
+}
+
+.progress-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.1);
+  @include flex-center;
+  color: $primary-color;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.progress-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  
+  .step-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0;
+  }
+  
+  .step-description {
+    font-size: 12px;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.progress-status {
+  width: 24px;
+  height: 24px;
+  @include flex-center;
+  color: $text-secondary;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 // Footer
-.login-footer {
+.auth-loading-footer {
   margin-top: 30px;
   padding-top: 20px;
   border-top: 1px solid rgba(127, 140, 141, 0.2);
@@ -412,7 +438,7 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
 
 // Responsive
 @media (max-width: 480px) {
-  .login-card {
+  .auth-loading-card {
     padding: 30px 20px;
     margin: 10px;
   }
@@ -430,13 +456,47 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
     font-size: 28px;
   }
   
-  .form-input {
-    font-size: 16px; // Evitar zoom en iOS
+  .custom-spinner {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .spinner-ring {
+    &:nth-child(2) {
+      width: 45px;
+      height: 45px;
+    }
+    
+    &:nth-child(3) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+  
+  .progress-item {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .progress-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .progress-text {
+    .step-title {
+      font-size: 13px;
+    }
+    
+    .step-description {
+      font-size: 11px;
+    }
   }
 }
 
 // Efectos adicionales
-.login-card::before {
+.auth-loading-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -451,13 +511,13 @@ $shadow-heavy: rgba(0, 0, 0, 0.25);
   pointer-events: none;
 }
 
-// Mejoras de accesibilidad
-.form-input:focus-visible {
-  outline: 2px solid $primary-color;
-  outline-offset: 2px;
-}
-
-.login-button:focus-visible {
-  outline: 2px solid $white;
-  outline-offset: 2px;
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 } 

@@ -4,6 +4,7 @@ import { AuthGuard } from './guards/auth.guard';
 
 // Componentes
 import { LoginComponent } from './components/auth/login/login.component';
+import { AuthLoadingComponent } from './components/auth/auth-loading/auth-loading.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IncidenciasListComponent } from './components/incidencias/incidencias-list/incidencias-list.component';
 import { IncidenciaDetailComponent } from './components/incidencias/incidencia-detail/incidencia-detail.component';
@@ -16,6 +17,7 @@ const routes: Routes = [
   // Rutas públicas
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'auth-loading', component: AuthLoadingComponent },
   
   // Rutas protegidas
   { 

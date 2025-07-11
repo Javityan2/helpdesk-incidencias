@@ -3,11 +3,38 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IncidenciasService, Incidencia } from '../../../services/incidencias.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 
 @Component({
   selector: 'app-incidencia-form',
   templateUrl: './incidencia-form.component.html',
-  styleUrls: ['./incidencia-form.component.scss']
+  styleUrls: ['./incidencia-form.component.scss'],
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('slideInRight', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+      ])
+    ]),
+    trigger('scaleIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
+    ]),
+    trigger('formField', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('200ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class IncidenciaFormComponent implements OnInit {
   incidenciaForm: FormGroup;
@@ -87,19 +114,13 @@ export class IncidenciaFormComponent implements OnInit {
             categoria: incidencia.categoria
           });
         } else {
-          this.snackBar.open(response.message || 'Error al cargar incidencia', 'Cerrar', {
-            duration: 5000,
-            panelClass: ['error-snackbar']
-          });
+          this.showErrorSnackbar(response.message || 'Error al cargar incidencia');
           this.router.navigate(['/incidencias']);
         }
       },
       error: (error) => {
         console.error('Error cargando incidencia:', error);
-        this.snackBar.open('Error al cargar la incidencia', 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+        this.showErrorSnackbar('Error al cargar la incidencia');
         this.router.navigate(['/incidencias']);
       },
       complete: () => {
@@ -117,24 +138,15 @@ export class IncidenciaFormComponent implements OnInit {
         this.incidenciasService.updateIncidencia(this.incidenciaId, incidenciaData).subscribe({
           next: (response) => {
             if (response.success) {
-              this.snackBar.open('Incidencia actualizada correctamente', 'Cerrar', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
-              });
+              this.showSuccessSnackbar('Incidencia actualizada correctamente');
               this.router.navigate(['/incidencias', this.incidenciaId]);
             } else {
-              this.snackBar.open(response.message || 'Error al actualizar incidencia', 'Cerrar', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-              });
+              this.showErrorSnackbar(response.message || 'Error al actualizar incidencia');
             }
           },
           error: (error) => {
             console.error('Error actualizando incidencia:', error);
-            this.snackBar.open('Error al actualizar la incidencia', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
+            this.showErrorSnackbar('Error al actualizar la incidencia');
           },
           complete: () => {
             this.loading = false;
@@ -144,24 +156,15 @@ export class IncidenciaFormComponent implements OnInit {
         this.incidenciasService.createIncidencia(incidenciaData).subscribe({
           next: (response) => {
             if (response.success) {
-              this.snackBar.open('Incidencia creada correctamente', 'Cerrar', {
-                duration: 3000,
-                panelClass: ['success-snackbar']
-              });
+              this.showSuccessSnackbar('Incidencia creada correctamente');
               this.router.navigate(['/incidencias']);
             } else {
-              this.snackBar.open(response.message || 'Error al crear incidencia', 'Cerrar', {
-                duration: 5000,
-                panelClass: ['error-snackbar']
-              });
+              this.showErrorSnackbar(response.message || 'Error al crear incidencia');
             }
           },
           error: (error) => {
             console.error('Error creando incidencia:', error);
-            this.snackBar.open('Error al crear la incidencia', 'Cerrar', {
-              duration: 5000,
-              panelClass: ['error-snackbar']
-            });
+            this.showErrorSnackbar('Error al crear la incidencia');
           },
           complete: () => {
             this.loading = false;
@@ -198,5 +201,19 @@ export class IncidenciaFormComponent implements OnInit {
       return `Mínimo ${requiredLength} caracteres`;
     }
     return '';
+  }
+
+  private showSuccessSnackbar(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 3000,
+      panelClass: ['success-snackbar']
+    });
+  }
+
+  private showErrorSnackbar(message: string): void {
+    this.snackBar.open(message, 'Cerrar', {
+      duration: 5000,
+      panelClass: ['error-snackbar']
+    });
   }
 } 

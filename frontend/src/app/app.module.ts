@@ -48,6 +48,7 @@ import { DraftsService } from './services/drafts.service';
 
 // Components
 import { LoginComponent } from './components/auth/login/login.component';
+import { AuthLoadingComponent } from './components/auth/auth-loading/auth-loading.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IncidenciasListComponent } from './components/incidencias/incidencias-list/incidencias-list.component';
 import { IncidenciaDetailComponent } from './components/incidencias/incidencia-detail/incidencia-detail.component';
@@ -58,11 +59,13 @@ import { UserProfileComponent } from './components/user/user-profile.component';
 import { UserFavoritesComponent } from './components/user/user-favorites.component';
 import { UserDraftsComponent } from './components/user/user-drafts.component';
 import { NotificationsPanelComponent } from './components/shared/notifications-panel.component';
+import { LoadingComponent } from './components/shared/loading/loading.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    AuthLoadingComponent,
     DashboardComponent,
     IncidenciasListComponent,
     IncidenciaDetailComponent,
@@ -72,7 +75,8 @@ import { NotificationsPanelComponent } from './components/shared/notifications-p
     UserProfileComponent,
     UserFavoritesComponent,
     UserDraftsComponent,
-    NotificationsPanelComponent
+    NotificationsPanelComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

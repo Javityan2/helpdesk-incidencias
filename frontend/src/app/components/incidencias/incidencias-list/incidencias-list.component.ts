@@ -1,11 +1,46 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { IncidenciaService, Incidencia } from '../../../services/incidencia.service';
+import { trigger, state, style, transition, animate, keyframes } from '@angular/animations';
 
 @Component({
   selector: 'app-incidencias-list',
   templateUrl: './incidencias-list.component.html',
-  styleUrls: ['./incidencias-list.component.scss']
+  styleUrls: ['./incidencias-list.component.scss'],
+  animations: [
+    trigger('fadeInUp', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(20px)' }),
+        animate('400ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('slideInRight', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
+      ])
+    ]),
+    trigger('scaleIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'scale(1)' }))
+      ])
+    ]),
+    trigger('cardHover', [
+      transition('* => hovered', [
+        animate('200ms ease-out', keyframes([
+          style({ transform: 'translateY(0)', offset: 0 }),
+          style({ transform: 'translateY(-5px)', offset: 1 })
+        ]))
+      ]),
+      transition('hovered => *', [
+        animate('200ms ease-in', keyframes([
+          style({ transform: 'translateY(-5px)', offset: 0 }),
+          style({ transform: 'translateY(0)', offset: 1 })
+        ]))
+      ])
+    ])
+  ]
 })
 export class IncidenciasListComponent implements OnInit {
   
@@ -113,20 +148,20 @@ export class IncidenciasListComponent implements OnInit {
 
   getPrioridadClass(prioridad: string): string {
     switch (prioridad) {
-      case 'ALTA': return 'badge bg-danger';
-      case 'MEDIA': return 'badge bg-warning';
-      case 'BAJA': return 'badge bg-success';
-      default: return 'badge bg-secondary';
+      case 'ALTA': return 'badge-priority high';
+      case 'MEDIA': return 'badge-priority medium';
+      case 'BAJA': return 'badge-priority low';
+      default: return 'badge-priority default';
     }
   }
 
   getEstadoClass(estado: string): string {
     switch (estado) {
-      case 'PENDIENTE': return 'badge bg-warning';
-      case 'EN_PROCESO': return 'badge bg-info';
-      case 'RESUELTA': return 'badge bg-success';
-      case 'CERRADA': return 'badge bg-secondary';
-      default: return 'badge bg-secondary';
+      case 'PENDIENTE': return 'badge-status pending';
+      case 'EN_PROCESO': return 'badge-status in-progress';
+      case 'RESUELTA': return 'badge-status resolved';
+      case 'CERRADA': return 'badge-status closed';
+      default: return 'badge-status default';
     }
   }
 

@@ -1,81 +1,123 @@
-<div class="container-fluid">
-  <div class="row justify-content-center align-items-center min-vh-100">
-    <div class="col-md-6 col-lg-4">
-      <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white text-center">
-          <h4 class="mb-0">
-            <i class="fas fa-user-lock me-2"></i>
-            Iniciar Sesión
-          </h4>
+<div class="login-container">
+  <div class="login-background">
+    <div class="background-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+  
+  <div class="login-content">
+    <div class="login-card">
+      <!-- Header con logo y título -->
+      <div class="login-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div class="logo-text">
+            <h1>HelpDesk</h1>
+            <p>Sistema de Incidencias</p>
+          </div>
         </div>
-        <div class="card-body p-4">
-          <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-            
-            <!-- Campo Identificador -->
-            <div class="mb-3">
-              <label for="identificador" class="form-label">
-                <i class="fas fa-id-card me-2"></i>ID de Empleado o Email
-              </label>
+      </div>
+
+      <!-- Formulario de login -->
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+        
+        <!-- Campo Identificador -->
+        <div class="form-field-container">
+          <div class="input-group">
+            <div class="input-icon">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="input-wrapper">
               <input 
                 type="text" 
-                class="form-control" 
                 id="identificador"
                 name="identificador"
                 [(ngModel)]="loginData.identificador"
-                placeholder="Ingresa tu ID de empleado o email"
+                placeholder="ID de empleado o email"
                 required
-                (keypress)="onKeyPress($event)">
+                (keypress)="onKeyPress($event)"
+                class="form-input"
+                [class.focused]="identificadorFocused"
+                (focus)="identificadorFocused = true"
+                (blur)="identificadorFocused = false">
+              <label for="identificador" class="floating-label">Identificador</label>
             </div>
+          </div>
+        </div>
 
-            <!-- Campo Contraseña -->
-            <div class="mb-3">
-              <label for="password" class="form-label">
-                <i class="fas fa-lock me-2"></i>Contraseña
-              </label>
-              <div class="input-group">
-                <input 
-                  [type]="showPassword ? 'text' : 'password'" 
-                  class="form-control" 
-                  id="password"
-                  name="password"
-                  [(ngModel)]="loginData.password"
-                  placeholder="Ingresa tu contraseña"
-                  required
-                  (keypress)="onKeyPress($event)">
-                <button 
-                  type="button" 
-                  class="btn btn-outline-secondary"
-                  (click)="togglePasswordVisibility()">
-                  <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-                </button>
-              </div>
+        <!-- Campo Contraseña -->
+        <div class="form-field-container">
+          <div class="input-group">
+            <div class="input-icon">
+              <i class="fas fa-lock"></i>
             </div>
-
-            <!-- Mensaje de Error -->
-            <div class="alert alert-danger" *ngIf="error">
-              <i class="fas fa-exclamation-triangle me-2"></i>
-              {{ error }}
-            </div>
-
-            <!-- Botón de Login -->
-            <div class="d-grid">
+            <div class="input-wrapper">
+              <input 
+                [type]="showPassword ? 'text' : 'password'" 
+                id="password"
+                name="password"
+                [(ngModel)]="loginData.password"
+                placeholder="Contraseña"
+                required
+                (keypress)="onKeyPress($event)"
+                class="form-input"
+                [class.focused]="passwordFocused"
+                (focus)="passwordFocused = true"
+                (blur)="passwordFocused = false">
+              <label for="password" class="floating-label">Contraseña</label>
               <button 
-                type="submit" 
-                class="btn btn-primary btn-lg"
-                [disabled]="loading || !loginForm.valid">
-                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
-                <i class="fas fa-sign-in-alt me-2" *ngIf="!loading"></i>
-                {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+                type="button" 
+                class="password-toggle"
+                (click)="togglePasswordVisibility()"
+                [class.active]="showPassword">
+                <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
               </button>
             </div>
-
-          </form>
+          </div>
         </div>
-        <div class="card-footer text-center text-muted">
-          <small>
-            <i class="fas fa-info-circle me-1"></i>
-            Sistema de Gestión de Incidencias
-          </small>
+
+        <!-- Mensaje de Error -->
+        <div class="error-message" *ngIf="error" [@slideInOut]>
+          <div class="error-content">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ error }}</span>
+          </div>
+        </div>
+
+        <!-- Botón de Login -->
+        <div class="submit-container">
+          <button 
+            type="submit" 
+            class="login-button"
+            [disabled]="loading || !loginForm.valid"
+            [class.loading]="loading">
+            <div class="button-content">
+              <div class="spinner" *ngIf="loading">
+                <div class="spinner-circle"></div>
+              </div>
+              <i class="fas fa-sign-in-alt" *ngIf="!loading"></i>
+              <span>{{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}</span>
+            </div>
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <div class="footer-content">
+          <div class="security-info">
+            <i class="fas fa-shield-alt"></i>
+            <span>Conexión segura</span>
+          </div>
+          <div class="version-info">
+            <span>v1.0.0</span>
+          </div>
         </div>
       </div>
     </div>

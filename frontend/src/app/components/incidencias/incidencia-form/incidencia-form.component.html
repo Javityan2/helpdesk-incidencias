@@ -1,92 +1,166 @@
-<div class="form-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>assignment</mat-icon>
-        {{ isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia' }}
-      </mat-card-title>
-    </mat-card-header>
-
-    <mat-card-content>
-      <form [formGroup]="incidenciaForm" (ngSubmit)="onSubmit()" class="form">
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Título</mat-label>
-            <input matInput formControlName="titulo" placeholder="Ingrese el título de la incidencia">
-            <mat-error *ngIf="incidenciaForm.get('titulo')?.hasError('required')">
-              El título es requerido
-            </mat-error>
-            <mat-error *ngIf="incidenciaForm.get('titulo')?.hasError('minlength')">
-              El título debe tener al menos 5 caracteres
-            </mat-error>
-          </mat-form-field>
+<!-- Header moderno -->
+<div class="page-header">
+  <div class="header-content">
+    <div class="header-left">
+      <div class="page-title">
+        <div class="title-icon">
+          <i class="fas fa-plus-circle"></i>
         </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Descripción</mat-label>
-            <textarea matInput formControlName="descripcion" 
-                      placeholder="Describa detalladamente el problema"
-                      rows="4"></textarea>
-            <mat-error *ngIf="incidenciaForm.get('descripcion')?.hasError('required')">
-              La descripción es requerida
-            </mat-error>
-            <mat-error *ngIf="incidenciaForm.get('descripcion')?.hasError('minlength')">
-              La descripción debe tener al menos 10 caracteres
-            </mat-error>
-          </mat-form-field>
+        <div class="title-text">
+          <h1>{{ isEditMode ? 'Editar Incidencia' : 'Nueva Incidencia' }}</h1>
+          <p>{{ isEditMode ? 'Modifica los detalles de la incidencia' : 'Crea una nueva incidencia en el sistema' }}</p>
         </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="btn-secondary" (click)="onCancel()" [disabled]="loading">
+        <i class="fas fa-arrow-left"></i>
+        <span>Volver</span>
+      </button>
+    </div>
+  </div>
+</div>
 
-        <div class="form-row three-columns">
-          <mat-form-field appearance="outline">
-            <mat-label>Estado</mat-label>
-            <mat-select formControlName="estado">
-              <mat-option *ngFor="let estado of estados" [value]="estado.value">
-                {{ estado.label }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="incidenciaForm.get('estado')?.hasError('required')">
-              El estado es requerido
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Prioridad</mat-label>
-            <mat-select formControlName="prioridad">
-              <mat-option *ngFor="let prioridad of prioridades" [value]="prioridad.value">
-                {{ prioridad.label }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="incidenciaForm.get('prioridad')?.hasError('required')">
-              La prioridad es requerida
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Categoría</mat-label>
-            <mat-select formControlName="categoria">
-              <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
-                {{ categoria.label }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="incidenciaForm.get('categoria')?.hasError('required')">
-              La categoría es requerida
-            </mat-error>
-          </mat-form-field>
+<!-- Formulario moderno -->
+<div class="form-section">
+  <div class="form-card">
+    <form [formGroup]="incidenciaForm" (ngSubmit)="onSubmit()" class="form">
+      <!-- Título -->
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-heading"></i>
+          <span>Título de la Incidencia</span>
+        </label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            formControlName="titulo" 
+            class="form-input"
+            placeholder="Ingrese un título descriptivo para la incidencia"
+            [class.error]="incidenciaForm.get('titulo')?.invalid && incidenciaForm.get('titulo')?.touched">
+          <i class="fas fa-edit input-icon"></i>
         </div>
-
-        <div class="form-actions">
-          <button type="button" mat-button (click)="onCancel()" [disabled]="loading">
-            <mat-icon>cancel</mat-icon>
-            Cancelar
-          </button>
-          <button type="submit" mat-raised-button color="primary" [disabled]="loading || incidenciaForm.invalid">
-            <mat-icon *ngIf="!loading">{{ isEditMode ? 'save' : 'add' }}</mat-icon>
-            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-            {{ isEditMode ? 'Actualizar' : 'Crear' }}
-          </button>
+        <div class="error-message" *ngIf="incidenciaForm.get('titulo')?.invalid && incidenciaForm.get('titulo')?.touched">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ getErrorMessage('titulo') }}</span>
         </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label">
+          <i class="fas fa-align-left"></i>
+          <span>Descripción Detallada</span>
+        </label>
+        <div class="textarea-wrapper">
+          <textarea 
+            formControlName="descripcion" 
+            class="form-textarea"
+            placeholder="Describa detalladamente el problema, incluyendo pasos para reproducirlo, contexto y cualquier información relevante"
+            rows="6"
+            [class.error]="incidenciaForm.get('descripcion')?.invalid && incidenciaForm.get('descripcion')?.touched"></textarea>
+          <i class="fas fa-file-alt textarea-icon"></i>
+        </div>
+        <div class="error-message" *ngIf="incidenciaForm.get('descripcion')?.invalid && incidenciaForm.get('descripcion')?.touched">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ getErrorMessage('descripcion') }}</span>
+        </div>
+      </div>
+
+      <!-- Campos de clasificación -->
+      <div class="classification-section">
+        <div class="section-title">
+          <i class="fas fa-tags"></i>
+          <span>Clasificación de la Incidencia</span>
+        </div>
+        
+        <div class="classification-grid">
+          <!-- Estado -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-flag"></i>
+              <span>Estado</span>
+            </label>
+            <div class="select-wrapper">
+              <select formControlName="estado" class="form-select" [class.error]="incidenciaForm.get('estado')?.invalid && incidenciaForm.get('estado')?.touched">
+                <option value="">Seleccione el estado</option>
+                <option *ngFor="let estado of estados" [value]="estado.value">
+                  {{ estado.label }}
+                </option>
+              </select>
+              <i class="fas fa-chevron-down select-icon"></i>
+            </div>
+            <div class="error-message" *ngIf="incidenciaForm.get('estado')?.invalid && incidenciaForm.get('estado')?.touched">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ getErrorMessage('estado') }}</span>
+            </div>
+          </div>
+
+          <!-- Prioridad -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Prioridad</span>
+            </label>
+            <div class="select-wrapper">
+              <select formControlName="prioridad" class="form-select" [class.error]="incidenciaForm.get('prioridad')?.invalid && incidenciaForm.get('prioridad')?.touched">
+                <option value="">Seleccione la prioridad</option>
+                <option *ngFor="let prioridad of prioridades" [value]="prioridad.value">
+                  {{ prioridad.label }}
+                </option>
+              </select>
+              <i class="fas fa-chevron-down select-icon"></i>
+            </div>
+            <div class="error-message" *ngIf="incidenciaForm.get('prioridad')?.invalid && incidenciaForm.get('prioridad')?.touched">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ getErrorMessage('prioridad') }}</span>
+            </div>
+          </div>
+
+          <!-- Categoría -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-folder"></i>
+              <span>Categoría</span>
+            </label>
+            <div class="select-wrapper">
+              <select formControlName="categoria" class="form-select" [class.error]="incidenciaForm.get('categoria')?.invalid && incidenciaForm.get('categoria')?.touched">
+                <option value="">Seleccione la categoría</option>
+                <option *ngFor="let categoria of categorias" [value]="categoria.value">
+                  {{ categoria.label }}
+                </option>
+              </select>
+              <i class="fas fa-chevron-down select-icon"></i>
+            </div>
+            <div class="error-message" *ngIf="incidenciaForm.get('categoria')?.invalid && incidenciaForm.get('categoria')?.touched">
+              <i class="fas fa-exclamation-circle"></i>
+              <span>{{ getErrorMessage('categoria') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones del formulario -->
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="onCancel()" [disabled]="loading">
+          <i class="fas fa-times"></i>
+          <span>Cancelar</span>
+        </button>
+        <button type="submit" class="btn-submit" [disabled]="loading || incidenciaForm.invalid">
+          <div class="btn-content" *ngIf="!loading">
+            <i class="fas" [class.fa-save]="isEditMode" [class.fa-plus]="!isEditMode"></i>
+            <span>{{ isEditMode ? 'Actualizar' : 'Crear' }} Incidencia</span>
+          </div>
+          <div class="btn-loading" *ngIf="loading">
+            <div class="loading-spinner">
+              <div class="spinner-ring"></div>
+              <div class="spinner-ring"></div>
+              <div class="spinner-ring"></div>
+            </div>
+            <span>Procesando...</span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
 </div> 

@@ -1,11 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  animations: [
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-10px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-10px)' }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
   
@@ -17,6 +29,8 @@ export class LoginComponent implements OnInit {
   loading = false;
   error = '';
   showPassword = false;
+  identificadorFocused = false;
+  passwordFocused = false;
 
   constructor(
     private authService: AuthService,
@@ -69,7 +83,7 @@ export class LoginComponent implements OnInit {
           
           // Esperar un poco para asegurar que el token se guarde correctamente
           setTimeout(() => {
-            console.log('LoginComponent - Navegando al dashboard...');
+            console.log('LoginComponent - Navegando al auth-loading...');
             console.log('LoginComponent - Estado de autenticación antes de navegar:', this.authService.isAuthenticated());
             console.log('LoginComponent - Token disponible:', this.authService.getToken() ? 'SÍ' : 'NO');
             
@@ -85,7 +99,8 @@ export class LoginComponent implements OnInit {
             console.log('LoginComponent - localStorage.token:', localStorage.getItem('token') ? 'SÍ' : 'NO');
             console.log('LoginComponent - localStorage.currentUser:', localStorage.getItem('currentUser') ? 'SÍ' : 'NO');
             
-            this.router.navigate(['/dashboard']).then(success => {
+            // Navegar al auth-loading en lugar del dashboard
+            this.router.navigate(['/auth-loading']).then(success => {
               console.log('LoginComponent - Navegación exitosa:', success);
               
               // Verificar el token después de la navegación

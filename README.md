@@ -43,6 +43,14 @@ Sistema completo de gestión de incidencias corporativas con autenticación JWT,
 - **Estadísticas** en dashboard
 - **Frecuencia de búsqueda** automática
 
+## ✨ Novedades Visuales y de Experiencia de Usuario (Junio 2025)
+
+- Rediseño completo de la pantalla de login, carga, lista y formulario de incidencias.
+- Interfaz moderna, profesional y 100% responsiva en todos los componentes principales.
+- Animaciones suaves, gradientes, glassmorphism y uso de iconos FontAwesome.
+- Mejoras de accesibilidad, usabilidad y experiencia de usuario.
+- Diseño adaptado para desktop, tablet y móvil.
+
 ## 🛠️ Tecnologías Utilizadas
 
 ### Backend

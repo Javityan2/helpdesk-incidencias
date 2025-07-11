@@ -1,24 +1,441 @@
-.loading-container {
+// Variables
+$primary-color: #667eea;
+$secondary-color: #764ba2;
+$accent-color: #f093fb;
+$success-color: #4facfe;
+$error-color: #ff6b6b;
+$text-primary: #2c3e50;
+$text-secondary: #7f8c8d;
+$background-light: #f8f9fa;
+$white: #ffffff;
+$shadow-light: rgba(0, 0, 0, 0.1);
+$shadow-medium: rgba(0, 0, 0, 0.15);
+$shadow-heavy: rgba(0, 0, 0, 0.25);
+
+// Mixins
+@mixin flex-center {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin gradient-bg {
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+}
+
+// Contenedor principal
+.loading-container {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  @include gradient-bg;
+  @include flex-center;
+  padding: 20px;
+}
+
+// Fondo animado
+.loading-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.background-shapes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+  
+  &.shape-1 {
+    width: 80px;
+    height: 80px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+  
+  &.shape-2 {
+    width: 120px;
+    height: 120px;
+    top: 60%;
+    right: 10%;
+    animation-delay: 2s;
+  }
+  
+  &.shape-3 {
+    width: 60px;
+    height: 60px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+  }
+  
+  &.shape-4 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    right: 20%;
+    animation-delay: 1s;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+// Contenido del loading
+.loading-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+}
+
+.loading-card {
+  @include glass-effect;
+  border-radius: 24px;
   padding: 40px;
+  box-shadow: 0 20px 60px $shadow-heavy;
+  animation: slideUp 0.8s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Header del loading
+.loading-header {
   text-align: center;
+  margin-bottom: 40px;
+}
+
+.logo-container {
+  @include flex-center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  @include gradient-bg;
+  @include flex-center;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+  
+  i {
+    font-size: 36px;
+    color: $white;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.logo-text {
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+    background: linear-gradient(135deg, $primary-color, $secondary-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  p {
+    font-size: 16px;
+    color: $text-secondary;
+    margin: 8px 0 0 0;
+    font-weight: 400;
+  }
+}
+
+// Spinner personalizado
+.spinner-container {
+  @include flex-center;
+  margin: 40px 0;
+}
+
+.custom-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.spinner-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-top: 3px solid $primary-color;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+    border-top-color: $secondary-color;
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    left: 20px;
+    border-top-color: $accent-color;
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Mensaje de carga
+.loading-message-container {
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .loading-message {
-  margin-top: 16px;
-  color: #666;
-  font-size: 1rem;
+  @include flex-center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 500;
+  color: $text-primary;
+  
+  i {
+    color: $primary-color;
+    font-size: 20px;
+  }
 }
 
-mat-spinner {
-  color: #1976d2;
+.loading-dots {
+  @include flex-center;
+  gap: 8px;
 }
 
-/* Tamaños del spinner */
-:host ::ng-deep .mat-mdc-progress-spinner {
-  width: auto !important;
-  height: auto !important;
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $primary-color;
+  animation: dotPulse 1.4s ease-in-out infinite both;
+  
+  &:nth-child(1) {
+    animation-delay: 0s;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// Información adicional
+.loading-info {
+  margin-bottom: 30px;
+}
+
+.info-item {
+  @include flex-center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  font-size: 14px;
+  color: $text-secondary;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(5px);
+  }
+  
+  i {
+    color: $primary-color;
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+  }
+  
+  span {
+    flex: 1;
+  }
+}
+
+// Footer
+.loading-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(127, 140, 141, 0.2);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: $text-secondary;
+}
+
+.security-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  i {
+    color: #4caf50;
+    font-size: 14px;
+  }
+}
+
+.version-info {
+  opacity: 0.7;
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .loading-card {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+  
+  .logo-icon {
+    width: 60px;
+    height: 60px;
+    
+    i {
+      font-size: 28px;
+    }
+  }
+  
+  .logo-text h1 {
+    font-size: 28px;
+  }
+  
+  .custom-spinner {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .spinner-ring {
+    &:nth-child(2) {
+      width: 45px;
+      height: 45px;
+    }
+    
+    &:nth-child(3) {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+// Efectos adicionales
+.loading-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+// Animaciones adicionales
+.info-item {
+  animation: slideInUp 0.6s ease-out;
+  
+  &:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  &:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 } 
