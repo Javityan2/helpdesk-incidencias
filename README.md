@@ -283,3 +283,7 @@ Aunque conocía previamente Spring Boot y Angular, es la primera vez que las uti
 ---
 
 **¡Disfruta usando el sistema de gestión de incidencias!** 🎉
+
+---
+
+> Consulta el informe detallado de funcionalidades pendientes y mejoras propuestas en el archivo [INFORME_FUNCIONALIDADES_PENDIENTES.md](INFORME_FUNCIONALIDADES_PENDIENTES.md).
