@@ -70,6 +70,8 @@ public class SecurityConfig {
             
             // Configurar autorización de endpoints
             .authorizeHttpRequests(authz -> authz
+                // Permitir preflight CORS requests
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Endpoints públicos
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
